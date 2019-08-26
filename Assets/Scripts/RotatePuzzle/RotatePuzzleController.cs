@@ -12,15 +12,14 @@ public class RotatePuzzleController : MonoBehaviour
     public Image cellsParent;
     private int pieceCount;
     private RotatePuzzle rotatePuzzle;
-
+    readonly float multiplier = 0.25f;
     public Sprite painting;    
 
     public TextMeshProUGUI winText;
     
     void Awake()
     {
-        pieceCount = 72;
-        float multiplier = 0.25f;
+        pieceCount = 35;        
         Camera.main.orthographicSize = (int)(painting.textureRect.height * multiplier);
         Debug.Log(multiplier);
         winText.gameObject.SetActive(false);
@@ -33,7 +32,12 @@ public class RotatePuzzleController : MonoBehaviour
     private void Update()
     {
         if (IsWin())
+        {
             winText.gameObject.SetActive(true);
+            Camera.main.orthographicSize = (int)(painting.textureRect.height * multiplier);
+            Camera.main.transform.localPosition = new Vector3(0, 0, -90);
+        }
+           
     }
 
     public bool IsWin()
