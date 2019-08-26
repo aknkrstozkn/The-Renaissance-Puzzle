@@ -19,7 +19,7 @@ public class RotatePuzzleController : MonoBehaviour
     
     void Awake()
     {
-        pieceCount = 35;        
+        pieceCount = 2520;        
         Camera.main.orthographicSize = (int)(painting.textureRect.height * multiplier);
         Debug.Log(multiplier);
         winText.gameObject.SetActive(false);

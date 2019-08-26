@@ -513,7 +513,7 @@ MonoBehaviour:
   cellPrefab: {fileID: 7797427690511842000, guid: 5a825dee96391f246843ff727dabfa7d,
     type: 3}
   cellsParent: {fileID: 522738007}
-  painting: {fileID: 21300000, guid: bbb31c79512645c48b8e7ed9cc0d35a2, type: 3}
+  painting: {fileID: 21300000, guid: 950ab0e90e440dd4294f431d0455b41b, type: 3}
   winText: {fileID: 1579947982}
 --- !u!1 &519420028
 GameObject:
