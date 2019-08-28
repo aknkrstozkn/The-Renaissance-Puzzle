@@ -367,7 +367,7 @@ ScriptsOnlyBuild:
     className: RawImage
   - hash:
       serializedVersion: 2
-      Hash: 13d8bedb93cd22a690b4aff3308f4174
+      Hash: 4a45347fb499324ef7db1eb91878b819
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: RotatePuzzleController
@@ -560,4 +560,4 @@ ScriptsOnlyBuild:
   platform: 19
   scenePathNames:
   - Assets/Scenes/RotatePuzzle.unity
-  playerPath: C:/Users/akinkursatozkan/Desktop/New folder/The-Renaissance-Puzzle.exe
+  playerPath: C:/Users/akinkursatozkan/Desktop/puzzle/The-Renaissance-Puzzle.exe

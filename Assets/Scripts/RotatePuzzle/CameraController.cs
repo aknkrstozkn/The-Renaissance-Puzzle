@@ -13,6 +13,11 @@ public class CameraController : MonoBehaviour
     float screenWidthInUnits;
     Bounds cameraBounds;
 
+
+    Vector2 mouseClickPos;
+    Vector2 mouseCurrentPos;
+    bool panning = false;
+    /*
     void CameraMovement()
     {
         mousePos = Input.mousePosition; //We need to get the new position every frame
@@ -39,7 +44,7 @@ public class CameraController : MonoBehaviour
                 transform.Translate(0, -(cameraSpeed * zoomRatio), 0);
 
     }
-
+    */
     
     private void Awake()
     {
@@ -58,10 +63,41 @@ public class CameraController : MonoBehaviour
     public Bounds OrthographicBounds()
     {
         screenHeightInUnits = Camera.main.orthographicSize * 2;
-        screenWidthInUnits = screenHeightInUnits * Screen.width / Screen.height;
+        screenWidthInUnits = screenHeightInUnits * Screen.width / (Screen.height) ;
         return new Bounds(
             Camera.main.transform.position,
             new Vector3(screenWidthInUnits, screenHeightInUnits, 0));
         
+    }
+
+    
+
+    private void CameraMovement()
+    {
+        // When LMB clicked get mouse click position and set panning to true
+        if (Input.GetKeyDown(KeyCode.Mouse2) && !panning)
+        {
+            mouseClickPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            panning = true;
+        }
+        // If LMB is already clicked, move the camera following the mouse position update
+        if (panning)
+        {   
+            mouseCurrentPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            var distance = mouseCurrentPos - mouseClickPos;
+            Vector3 position = transform.position - new Vector3(distance.x,distance.y,0);
+            if ((cameraBounds.max.x < position.x || cameraBounds.max.y < position.y)
+                || (cameraBounds.min.x > position.x || cameraBounds.min.y > position.y))
+            {
+                panning = false;
+            }
+            else
+                transform.position += new Vector3(-distance.x, -distance.y, 0);
+
+        }
+
+        // If LMB is released, stop moving the camera
+        if (Input.GetKeyUp(KeyCode.Mouse2))
+            panning = false;
     }
 }

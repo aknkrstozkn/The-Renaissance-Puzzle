@@ -15,7 +15,7 @@ public class TouchRotate : MonoBehaviour, IPointerDownHandler
         {
             TurnForward();
         }
-        else
+        else if(eventData.button == PointerEventData.InputButton.Left)
         {
             TurnBackward();
         }
