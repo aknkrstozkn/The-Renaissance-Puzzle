@@ -6,20 +6,20 @@ using UnityEngine.UI;
 public class SliderController : MonoBehaviour
 {
     // Start is called before the first frame update
-    readonly int wheelNumber  = 10;
+    readonly float wheelNumber  = 10f;
     float orthographSize;
     void Start()
     {
-        orthographSize = Camera.main.orthographicSize;
+        orthographSize = Camera.main.orthographicSize * 100;
         gameObject.GetComponent<Slider>().value = 0;
-        gameObject.GetComponent<Slider>().maxValue = Camera.main.orthographicSize - 1;
+        gameObject.GetComponent<Slider>().maxValue = orthographSize - 1;
         gameObject.GetComponent<Slider>().minValue = 0;
     }
 
     public void OnValueChange()
     {
         Camera.main.orthographicSize = 
-            (int)(orthographSize - gameObject.GetComponent<Slider>().value);
+            (orthographSize - gameObject.GetComponent<Slider>().value) / 100;
         
     }
 
@@ -40,5 +40,6 @@ public class SliderController : MonoBehaviour
     void Update()
     {
         OnValueChangeWheel();
+        
     }
 }

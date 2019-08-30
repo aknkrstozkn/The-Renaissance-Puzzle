@@ -6,27 +6,30 @@ using TMPro;
 
 public class RotatePuzzleController : MonoBehaviour
 {
-    public AudioClip buttonClickClip;    
+    [SerializeField]
+    private AudioClip buttonClickClip;
+    [SerializeField]
+    private Slider slider;
 
-    public Image cellPrefab;
-    public Image cellsParent;
-    public Image winPaint;
+    public GameObject cellsParent;
     private int pieceCount;
     private RotatePuzzle rotatePuzzle;
-    readonly float multiplier = 0.25f;
+    readonly float multiplier = 0.5f;
     public Sprite painting;
     bool firstTime;
     public TextMeshProUGUI winText;
     public TextMeshProUGUI countText;
-
+    public static Material glowMaterial;
+    public static Shader glowShader;
+    float orthographSize;
     void Awake()
     {
         firstTime = true;
-        pieceCount = 72;        
-        Camera.main.orthographicSize = (int)(painting.textureRect.height * multiplier);
-        Debug.Log(multiplier);
+        pieceCount = 35;
+        orthographSize = (int)((painting.textureRect.height / 100) * multiplier);
+        Camera.main.orthographicSize = orthographSize;
         winText.gameObject.SetActive(false);
-        rotatePuzzle = new RotatePuzzle(painting, pieceCount, cellPrefab, cellsParent);
+        rotatePuzzle = new RotatePuzzle(painting, pieceCount, cellsParent, glowMaterial, glowShader);
         rotatePuzzle.BuildRotatePuzzle();
         ArrangeWinPaint();
 
@@ -35,10 +38,10 @@ public class RotatePuzzleController : MonoBehaviour
     }
     void ArrangeWinPaint()
     {
-        winPaint.gameObject.SetActive(false);
-        winPaint.GetComponent<RectTransform>().sizeDelta =
-            new Vector2(painting.texture.width, painting.texture.height);
-        winPaint.sprite = painting;
+        //winPaint.gameObject.SetActive(false);
+        //winPaint.GetComponent<RectTransform>().sizeDelta =
+        //    new Vector2(painting.texture.width, painting.texture.height);
+        //winPaint.sprite = painting;
     }
     private void Update()
     {
@@ -46,11 +49,11 @@ public class RotatePuzzleController : MonoBehaviour
         if (IsWin() && firstTime)
         {
             firstTime = false;
-            winPaint.gameObject.SetActive(true);
+            cellsParent.GetComponent<SpriteRenderer>().sortingOrder = 1;
             winText.gameObject.SetActive(true);
-            cellsParent.gameObject.SetActive(false);
-            Camera.main.orthographicSize = (int)(painting.textureRect.height * multiplier);
-            Camera.main.transform.localPosition = new Vector3(0, 0, -90);
+            Camera.main.orthographicSize = (int)(painting.textureRect.height / 100 * multiplier);
+            Camera.main.transform.position = new Vector3(0, 0, Camera.main.transform.position.z);
+
         }
            
     }
@@ -61,6 +64,13 @@ public class RotatePuzzleController : MonoBehaviour
             return true;
 
         return false;
+    }
+    public void CenterButtonClick()
+    {
+        Camera.main.orthographicSize = orthographSize;
+        Camera.main.transform.position = new Vector3(0f, 0f, Camera.main.transform.position.z);
+        slider.value = 0;
+
     }
     public void ButtonClick()
     {

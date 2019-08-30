@@ -6,7 +6,7 @@ public class CameraController : MonoBehaviour
 {
     // Start is called before the first frame update
     Vector3 mousePos;
-    readonly int cameraSpeed = 20;
+    readonly int cameraSpeed = 1;
     float zoomRatio;
     float orthographicSize;
     float screenHeightInUnits;

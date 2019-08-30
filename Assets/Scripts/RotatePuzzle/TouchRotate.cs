@@ -2,13 +2,26 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-public class TouchRotate : MonoBehaviour, IPointerDownHandler
+public class TouchRotate : MonoBehaviour
+    //, IPointerDownHandler
 {
-    
 
-    
-
+    private void OnMouseOver()
+    {
+        if (Input.GetMouseButtonDown(1))
+        {
+            TurnForward();
+            Debug.Log("Right");
+        }
+        else if (Input.GetMouseButtonDown(0))
+        {
+            TurnBackward();
+            Debug.Log("Left");
+        }
+    }
+    /*
     public void OnPointerDown(PointerEventData eventData)
     {
         if (eventData.button == PointerEventData.InputButton.Right)
@@ -22,7 +35,7 @@ public class TouchRotate : MonoBehaviour, IPointerDownHandler
         Debug.Log("Angle: " + transform.eulerAngles.z);
        Debug.Log("Count: " + RotatePuzzle.falseCellCount);
     }
-
+    */
     void TurnForward()
     {
         
