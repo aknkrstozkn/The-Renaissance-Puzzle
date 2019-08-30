@@ -26,7 +26,7 @@ public class RotatePuzzleController : MonoBehaviour
     {
         firstTime = true;
         pieceCount = 35;
-        orthographSize = (int)((painting.textureRect.height / 100) * multiplier);
+        orthographSize = ((painting.textureRect.height / 100) * multiplier);
         Camera.main.orthographicSize = orthographSize;
         winText.gameObject.SetActive(false);
         rotatePuzzle = new RotatePuzzle(painting, pieceCount, cellsParent, glowMaterial, glowShader);

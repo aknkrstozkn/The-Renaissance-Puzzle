@@ -69,6 +69,12 @@
     <Compile Include="Assets\Scripts\RotatePuzzle\RotatePuzzleController.cs" />
     <Compile Include="Assets\Scripts\RotatePuzzle\SliderController.cs" />
     <Compile Include="Assets\Scripts\RotatePuzzle\TouchRotate.cs" />
+    <Compile Include="Assets\Scripts\SwapPuzzle\SwapCameraController.cs" />
+    <Compile Include="Assets\Scripts\SwapPuzzle\SwapCell.cs" />
+    <Compile Include="Assets\Scripts\SwapPuzzle\SwapPuzzle.cs" />
+    <Compile Include="Assets\Scripts\SwapPuzzle\SwapPuzzleController.cs" />
+    <Compile Include="Assets\Scripts\SwapPuzzle\SwapSliderController.cs" />
+    <Compile Include="Assets\Scripts\SwapPuzzle\SwapTouchRotate.cs" />
     <Compile Include="Assets\SpriteGlow\SpriteGlowEffect.cs" />
     <Compile Include="Assets\SpriteGlow\SpriteGlowMaterial.cs" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface-Mobile.shader" />

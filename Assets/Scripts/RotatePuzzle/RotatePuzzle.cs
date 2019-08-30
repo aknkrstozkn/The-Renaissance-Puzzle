@@ -103,9 +103,13 @@ public class RotatePuzzle
         SpriteRenderer spriteRenderer = cell.AddComponent<SpriteRenderer>() as SpriteRenderer;
         spriteRenderer.sprite = Sprite.Create(spriteTexture, rec, pivot);
         spriteRenderer.sortingLayerName = "Cells";
+        spriteRenderer.material = glowMaterial;
+        spriteRenderer.material.shader = glowShader;
+        SpriteGlowEffect glowEffect = cell.AddComponent<SpriteGlowEffect>();
 
+        glowEffect.OutlineWidth = 0;
+        glowEffect.AlphaThreshold = 0.01f;
 
-        
         //Finally, adding our cell to the list.
         cells.SetValue(cell, index);
     }

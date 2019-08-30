@@ -1,27 +1,39 @@
-﻿using System.Collections;
+﻿using SpriteGlow;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class TouchRotate : MonoBehaviour
-    //, IPointerDownHandler
+    //, IPointerDownHandler -> this is gor UI elements
 {
+    
+    /*
+     This code is for future hint system
+    public void SetPuzzlePieceGlow(bool outlinesEnabled)
+    {
+        int width = outlinesEnabled ? 4 : 0;
+        SpriteGlowEffect glowEffect = GetComponent<SpriteGlowEffect>();
+        glowEffect.OutlineWidth = width;
+        glowEffect.GlowBrightness = 1;
+        glowEffect.GlowColor = Color.white;
+    } */
 
     private void OnMouseOver()
     {
         if (Input.GetMouseButtonDown(1))
         {
-            TurnForward();
-            Debug.Log("Right");
+            TurnBackward();
         }
         else if (Input.GetMouseButtonDown(0))
         {
-            TurnBackward();
-            Debug.Log("Left");
+            TurnForward();
         }
     }
+
     /*
+     * This code is works for UI items
     public void OnPointerDown(PointerEventData eventData)
     {
         if (eventData.button == PointerEventData.InputButton.Right)
