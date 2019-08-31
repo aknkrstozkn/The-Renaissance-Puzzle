@@ -10,6 +10,8 @@ public class SwapPuzzle
     public static int invertedCellCount;
     public static int shiftedCellCount;
 
+    public static Dictionary<float, Dictionary<float, GameObject>> positionOfCells;
+
     private bool isRotateEnabled;
 
     private int pixel;
@@ -53,19 +55,26 @@ public class SwapPuzzle
         pieces = new Texture2D[pieceCount];
     }
     private void BuildCells()    {
+        positionOfCells = new Dictionary<float, Dictionary<float, GameObject>>();
         //Cell properties
         Vector2 pivot = new Vector2(0.5f, 0.5f);
         Rect rec = new Rect(0, 0, pixel * 100, pixel * 100);
         //------------------------------
         Vector3[] ramdomCellPosition = randomCellPositions();
         for (int i = 0; i < widthSteps; i++)
+        {
+            Dictionary<float, GameObject> yPositionsOfCells = new Dictionary<float, GameObject>();
+            float xCordinate = (pixel * i) + ((float)pixel / 2);
             for (int j = 0; j < heightSteps; j++)
             {
                 int index = (i * heightSteps) + j;
+                float yCordinate = (pixel * j) + ((float)pixel / 2);
 
                 BuilCell(ramdomCellPosition[index], index, i, j, pivot, rec);
+                yPositionsOfCells.Add(yCordinate, cells[index]);
             }
-        
+            positionOfCells.Add(xCordinate, yPositionsOfCells);
+        }
     }
 
     private Vector3[] randomCellPositions()
@@ -78,6 +87,8 @@ public class SwapPuzzle
 
         Vector3[] cellPositions = new Vector3[pieceCount];
         for (int i = 0; i < widthSteps; i++)
+        {
+            float xCordinate = (pixel * i) + ((float)pixel / 2);
             for (int j = 0; j < heightSteps; j++)
             {
                 int tempIndex = Random.Range(0, tempPieceCount);
@@ -85,11 +96,12 @@ public class SwapPuzzle
                 indexes.RemoveAt(tempIndex);
                 tempPieceCount--;
 
-                float xCordinate = (pixel * i) + ((float)pixel / 2);
+
                 float yCordinate = (pixel * j) + ((float)pixel / 2);
 
                 cellPositions.SetValue(new Vector3(xCordinate, yCordinate, 0f), index);
             }
+        }
         return cellPositions;
     }
 
@@ -115,6 +127,7 @@ public class SwapPuzzle
         else
             cell.transform.SetPositionAndRotation(randomCellPosition,
             Quaternion.Euler(0, 0, 0));
+
 
         //Naming Cell and Setting his parent
         cell.name = "cell_" + xCordinate.ToString() + "x" + yCordinate.ToString();
