@@ -15,7 +15,7 @@ public class SwapPuzzleController : MonoBehaviour
 
     public GameObject cellsParent;
     private int pieceCount;
-    private SwapPuzzle rotatePuzzle;
+    private SwapPuzzle swapPuzzle;
     readonly float multiplier = 0.5f;
     public Sprite painting;
     bool firstTime;
@@ -28,19 +28,44 @@ public class SwapPuzzleController : MonoBehaviour
     {
         firstTime = true;
         pieceCount = 35;
-        isRotateEnabled = false;
+        isRotateEnabled = true;
 
         orthographSize = ((painting.textureRect.height / 100) * multiplier);
         Camera.main.orthographicSize = orthographSize;
         winText.gameObject.SetActive(false);
-        rotatePuzzle = new SwapPuzzle(isRotateEnabled, painting, pieceCount, cellsParent, glowMaterial, glowShader);
-        rotatePuzzle.BuildRotatePuzzle();
+        swapPuzzle = new SwapPuzzle(isRotateEnabled, painting, pieceCount, cellsParent, glowMaterial, glowShader);
+        swapPuzzle.BuildSwapPuzzle();
 
     }
-    
+    public void Swap()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+        {
+            SwapPuzzle.selectedCell.GetComponent<SwapCell>().SwapLeft();
+        }
+        if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
+        {
+            SwapPuzzle.selectedCell.GetComponent<SwapCell>().SwapRight();
+        }
+        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
+        {
+            SwapPuzzle.selectedCell.GetComponent<SwapCell>().SwapForward();
+        }
+        if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
+        {
+            SwapPuzzle.selectedCell.GetComponent<SwapCell>().SwapBackward();
+        }
+    }
     private void Update()
     {
-        countText.text = SwapPuzzle.invertedCellCount.ToString();
+        Swap();
+        
+        if (SwapPuzzle.invertedCellCount > SwapPuzzle.shiftedCellCount)
+            countText.text = SwapPuzzle.invertedCellCount.ToString();
+        else
+            countText.text = SwapPuzzle.shiftedCellCount.ToString();
+            
+
         if (IsWin() && firstTime)
         {
             firstTime = false;
@@ -55,10 +80,10 @@ public class SwapPuzzleController : MonoBehaviour
 
     public bool IsWin()
     {
-        if (RotatePuzzle.falseCellCount == 0)
-            return true;
+        bool SwapWin = (SwapPuzzle.shiftedCellCount == 0);
+        bool RotateWin = (SwapPuzzle.invertedCellCount == 0);        
 
-        return false;
+        return (SwapWin && RotateWin);
     }
     public void CenterButtonClick()
     {

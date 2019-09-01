@@ -10,11 +10,12 @@ public class SwapPuzzle
     public static int invertedCellCount;
     public static int shiftedCellCount;
 
-    public static Dictionary<float, Dictionary<float, GameObject>> positionOfCells;
+    public static Dictionary<Vector2, GameObject> positionOfCells;
+    public static GameObject selectedCell;
+    
+    public static bool isRotateEnabled;
 
-    private bool isRotateEnabled;
-
-    private int pixel;
+    private float pixel;
     private int heightSteps;
     private int widthSteps;
 
@@ -36,7 +37,7 @@ public class SwapPuzzle
     }
     public SwapPuzzle(bool isRotateEnabled, Sprite painting, int pieceCount, GameObject cellsParent, Material glowMaterial, Shader glowShader)
     {
-        this.isRotateEnabled = isRotateEnabled;
+        SwapPuzzle.isRotateEnabled = isRotateEnabled;
         
         this.painting = painting;
         this.pieceCount = pieceCount;
@@ -55,29 +56,32 @@ public class SwapPuzzle
         pieces = new Texture2D[pieceCount];
     }
     private void BuildCells()    {
-        positionOfCells = new Dictionary<float, Dictionary<float, GameObject>>();
+        positionOfCells = new Dictionary<Vector2, GameObject>();
         //Cell properties
         Vector2 pivot = new Vector2(0.5f, 0.5f);
         Rect rec = new Rect(0, 0, pixel * 100, pixel * 100);
         //------------------------------
-        Vector3[] ramdomCellPosition = randomCellPositions();
-        for (int i = 0; i < widthSteps; i++)
+        Vector2[] ramdomCellPosition = RandomCellPositions();
+        for (float i = 0; i < widthSteps; i++)
         {
-            Dictionary<float, GameObject> yPositionsOfCells = new Dictionary<float, GameObject>();
+            
             float xCordinate = (pixel * i) + ((float)pixel / 2);
-            for (int j = 0; j < heightSteps; j++)
+            for (float j = 0; j < heightSteps; j++)
             {
-                int index = (i * heightSteps) + j;
+                int index = (int)((i * heightSteps) + j);
                 float yCordinate = (pixel * j) + ((float)pixel / 2);
 
                 BuilCell(ramdomCellPosition[index], index, i, j, pivot, rec);
-                yPositionsOfCells.Add(yCordinate, cells[index]);
+                positionOfCells.Add(ramdomCellPosition[index], cells[index]);
+
             }
-            positionOfCells.Add(xCordinate, yPositionsOfCells);
+            
         }
+        selectedCell = positionOfCells[new Vector2((pixel / 2f),(pixel / 2f))];
+        selectedCell.GetComponent<SwapCell>().SetPuzzlePieceGlow(true);
     }
 
-    private Vector3[] randomCellPositions()
+    private Vector2[] RandomCellPositions()
     {
         ArrayList indexes = new ArrayList();
         for (int k = 0; k < pieceCount; k++)
@@ -85,11 +89,11 @@ public class SwapPuzzle
                 
         int tempPieceCount = pieceCount;
 
-        Vector3[] cellPositions = new Vector3[pieceCount];
-        for (int i = 0; i < widthSteps; i++)
+        Vector2[] cellPositions = new Vector2[pieceCount];
+        for (float i = 0; i < widthSteps; i++)
         {
-            float xCordinate = (pixel * i) + ((float)pixel / 2);
-            for (int j = 0; j < heightSteps; j++)
+            float xCordinate = ((float)pixel * i) + ((float)pixel / 2f);
+            for (float j = 0; j < heightSteps; j++)
             {
                 int tempIndex = Random.Range(0, tempPieceCount);
                 int index = (int)indexes[tempIndex];
@@ -97,25 +101,26 @@ public class SwapPuzzle
                 tempPieceCount--;
 
 
-                float yCordinate = (pixel * j) + ((float)pixel / 2);
+                float yCordinate = ((float)pixel * j) + ((float)pixel / 2f);
 
-                cellPositions.SetValue(new Vector3(xCordinate, yCordinate, 0f), index);
+                cellPositions.SetValue(new Vector2(xCordinate, yCordinate), index);
+                
             }
         }
         return cellPositions;
     }
 
     private RuntimeAnimatorController animatorController = null;
-    private void BuilCell(Vector3 randomCellPosition, int index, int i, int j, Vector2 pivot, Rect rec)
+    private void BuilCell(Vector2 randomCellPosition, int index, float i, float j, Vector2 pivot, Rect rec)
     {
         //Cordinates for cell
-        float xCordinate = (pixel * i) + ((float)pixel / 2);
-        float yCordinate = (pixel * j) + ((float)pixel / 2);
+        float xCordinate = (pixel * i) + (pixel / 2f);
+        float yCordinate = (pixel * j) + (pixel / 2f);
         //Creating cells
         GameObject cell = new GameObject();       
        
         //Bounding with script
-        cell.AddComponent<TouchRotate>();
+        cell.AddComponent<TouchSwapCell>();        
         //---------------------
 
         RectTransform rectTransform = cell.AddComponent<RectTransform>() as RectTransform;
@@ -140,10 +145,10 @@ public class SwapPuzzle
         //Positioning; anchorMin and anchorMax are for starting position bottom left corner of parent.
         rectTransform.anchorMin = new Vector2(0f, 0f);
         rectTransform.anchorMax = new Vector2(0f, 0f);
-        rectTransform.anchoredPosition = new Vector3(x: xCordinate, y: yCordinate);
+        rectTransform.anchoredPosition = new Vector3(x: randomCellPosition.x, y: randomCellPosition.y);
         //Creating Sprite Texture---------------------------------------------------------------------
-        Texture2D spriteTexture = new Texture2D(pixel * 100, pixel * 100);
-        var pixels = painting.texture.GetPixels((pixel * 100) * i, (pixel * 100) * j, (pixel * 100), (pixel * 100));        
+        Texture2D spriteTexture = new Texture2D((int)(pixel * 100f), (int)(pixel * 100f));
+        var pixels = painting.texture.GetPixels((int)((pixel * 100) * i), (int)((pixel * 100) * j), (int)(pixel * 100f), (int)(pixel * 100f));        
         spriteTexture.SetPixels(pixels);
         spriteTexture.Apply();
         //------------------------------------------------------------------------------------
@@ -153,44 +158,78 @@ public class SwapPuzzle
         spriteRenderer.sortingLayerName = "Cells";
         spriteRenderer.material = glowMaterial;
         spriteRenderer.material.shader = glowShader;
+        //GlowEffect----------------
         SpriteGlowEffect glowEffect = cell.AddComponent<SpriteGlowEffect>();
-
         glowEffect.OutlineWidth = 0;
         glowEffect.AlphaThreshold = 0.01f;
-
+        //-------------------------
+        //-----SwapCell Values---------
+        SwapCell swapCell = cell.AddComponent<SwapCell>();
+        swapCell.SetTruePosition(new Vector2(xCordinate, yCordinate));
+        swapCell.SetIsPositionTrue(swapCell.GetTruePosition().Equals(randomCellPosition));
+        swapCell.SetForward(null);
+        swapCell.SetBackward(null);
+        swapCell.SetLeft(null);
+        swapCell.SetRight(null);
+        //-----------------------
         //Finally, adding our cell to the list.
         cells.SetValue(cell, index);
     }
-    public void BuildRotatePuzzle()
+    public void BuildSwapPuzzle()
     {
         SetCellsParentSprite();
         BuildCells();
         CountFalseCells();
-
-        //cellsParent.enabled = false;
-
+        SetSwapCellsAdjacents();
     }
-    
-    
+
+    private void SetSwapCellsAdjacents()
+    {
+        foreach (GameObject cell in cells)
+        {
+            SwapCell swapCell = cell.GetComponent<SwapCell>();
+
+            float xCordinate = cell.GetComponent<RectTransform>().anchoredPosition.x;
+            float yCordinate = cell.GetComponent<RectTransform>().anchoredPosition.y;
+
+            Debug.Log("x: " + xCordinate.ToString() + " y: " + yCordinate.ToString());
+
+            
+
+            if (positionOfCells.ContainsKey(new Vector2(xCordinate, yCordinate + pixel)))
+                swapCell.SetForward(positionOfCells[new Vector2(xCordinate, yCordinate + pixel)]);         
+               
+            if(positionOfCells.ContainsKey(new Vector2(xCordinate, yCordinate - pixel)))
+                swapCell.SetBackward(positionOfCells[new Vector2(xCordinate, yCordinate - pixel)]);
+
+            if(positionOfCells.ContainsKey(new Vector2(xCordinate + pixel, yCordinate)))
+                swapCell.SetRight(positionOfCells[new Vector2(xCordinate + pixel, yCordinate)]);
+
+            if (positionOfCells.ContainsKey(new Vector2(xCordinate - pixel, yCordinate)))
+                swapCell.SetLeft(positionOfCells[new Vector2(xCordinate - pixel, yCordinate)]);
+
+        }
+    }
+
     private void CountFalseCells()
     {
         foreach (GameObject cell in cells)
         {
             if (cell.transform.eulerAngles.z < 90)
-            {
                 invertedCellCount--;
-            }
+            if (cell.GetComponent<SwapCell>().GetIsPositionTrue().Equals(true))
+                shiftedCellCount--;            
         }
 
     }
-    private int CalculatePixel()
+    private float CalculatePixel()
     {
-        int area = (painting.texture.height / 100) * (painting.texture.width / 100);
-        return (int)Mathf.Sqrt(area / pieceCount);
+        float area = ((float)painting.texture.height / 100f) * ((float)painting.texture.width / 100f);
+        return Mathf.Sqrt(area / pieceCount);
     }
-    private int GetSteps(int dimension)
+    private int GetSteps(float dimension)
     {
-        return dimension / pixel;
+        return (int)(dimension / pixel);
     }
     private void SetCellsParentSprite()
     {

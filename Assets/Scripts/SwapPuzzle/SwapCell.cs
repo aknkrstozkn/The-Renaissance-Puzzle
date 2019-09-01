@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using SpriteGlow;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,7 +7,7 @@ public class SwapCell : MonoBehaviour
 {
     // Start is called before the first frame update
     private bool isPositionTrue;
-    private Vector3 truePosition;
+    private Vector2 truePosition;
 
     private GameObject forward;
     private GameObject tempForward;
@@ -15,73 +16,7 @@ public class SwapCell : MonoBehaviour
     private GameObject right;
     private GameObject tempRight;
     private GameObject left;
-    private GameObject tempLeft;
-
-    private GameObject swapObject;
-    private SwapCell swapCell;
-    public void SwapForward()
-    {
-        if (forward.Equals(null))
-            return;
-
-        SetTempValues();
-                
-        SwapCell forwardCell = tempForward.GetComponent<SwapCell>();
-        backward = forward;
-        left = forwardCell.GetLeft();
-        right = forwardCell.GetRight();
-        forward = forwardCell.GetForward();
-
-        forwardCell.SetForward(this.gameObject);
-        forwardCell.SetBackward(tempBackward);
-        forwardCell.SetLeft(tempLeft);
-        forwardCell.SetRight(tempRight);
-
-        if (forwardCell.GetIsPositionTrue().Equals(true))
-        {
-            SwapPuzzle.shiftedCellCount++;
-            forwardCell.SetIsPositionTrue(false);
-            if (isPositionTrue.Equals(true))
-            {
-                SwapPuzzle.shiftedCellCount++;
-                SetIsPositionTrue(false);
-            }
-            
-        }
-        else
-        {
-            if (isPositionTrue.Equals(true))
-            {
-                SwapPuzzle.shiftedCellCount++;
-                forwardCell.SetIsPositionTrue(false);
-            }
-            else
-            {
-                if (truePosition.Equals(tempForward.transform.position))
-                {
-                    SwapPuzzle.shiftedCellCount--;
-                    SetIsPositionTrue(true);
-                    if (forwardCell.GetTruePosition().Equals(gameObject.transform.position))
-                    {
-                        SwapPuzzle.shiftedCellCount--;
-                        forwardCell.SetIsPositionTrue(true);
-                    }
-
-                }
-                else
-                {
-                    if (forwardCell.GetTruePosition().Equals(gameObject.transform.position))
-                    {
-                        SwapPuzzle.shiftedCellCount--;
-                        forwardCell.SetIsPositionTrue(true);
-                    }
-                }
-            }
-        }
-        Vector3 tempPosition = gameObject.transform.position;
-        gameObject.transform.position = tempForward.transform.position;
-        tempForward.transform.position = tempPosition;
-    }
+    private GameObject tempLeft;    
     
     private void SetTempValues()
     {
@@ -90,11 +25,11 @@ public class SwapCell : MonoBehaviour
         tempLeft = left;
         tempRight = right;
     }
-    public Vector3 GetTruePosition()
+    public Vector2 GetTruePosition()
     {
         return truePosition;
     }
-    public void SetTruePosition(Vector3 truePosition)
+    public void SetTruePosition(Vector2 truePosition)
     {
         this.truePosition = truePosition;
     }
@@ -146,93 +81,167 @@ public class SwapCell : MonoBehaviour
         this.left = left;
     }
 
-
-
     public void SwapBackward()
     {
-        if (backward.Equals(null))
+        if (backward == null)
             return;
 
         SetTempValues();
 
-        swapObject = backward;
-        swapCell = swapObject.GetComponent<SwapCell>();
+        GameObject swapObject = backward;
+        SwapCell swapCell = swapObject.GetComponent<SwapCell>();
+
+        SetForwardAdjacentsValue(swapObject);
+        SetLeftAdjacentsValue(swapObject);
+        SetRightAdjacentsValue(swapObject);
+
+        swapCell.SetBackwardAdjacentsValue(gameObject);
+        swapCell.SetRightAdjacentsValue(gameObject);
+        swapCell.SetLeftAdjacentsValue(gameObject);
+
         forward = backward;
+        backward = swapCell.GetBackward();
         left = swapCell.GetLeft();
         right = swapCell.GetRight();
-        backward = swapCell.GetBackward();
+        
 
         swapCell.SetForward(tempForward);
         swapCell.SetBackward(this.gameObject);
         swapCell.SetLeft(tempLeft);
         swapCell.SetRight(tempRight);
 
-        if (swapCell.GetIsPositionTrue().Equals(true))
-        {
-            SwapPuzzle.shiftedCellCount++;
-            swapCell.SetIsPositionTrue(false);
-            if (isPositionTrue.Equals(true))
-            {
-                SwapPuzzle.shiftedCellCount++;
-                SetIsPositionTrue(false);
-            }
-
-        }
-        else
-        {
-            if (isPositionTrue.Equals(true))
-            {
-                SwapPuzzle.shiftedCellCount++;
-                SetIsPositionTrue(false);
-            }
-            else
-            {
-                if (truePosition.Equals(swapObject.transform.position))
-                {
-                    SwapPuzzle.shiftedCellCount--;
-                    SetIsPositionTrue(true);
-                    if (swapCell.GetTruePosition().Equals(gameObject.transform.position))
-                    {
-                        SwapPuzzle.shiftedCellCount--;
-                        swapCell.SetIsPositionTrue(true);
-                    }
-
-                }
-                else
-                {
-                    if (swapCell.GetTruePosition().Equals(gameObject.transform.position))
-                    {
-                        SwapPuzzle.shiftedCellCount--;
-                        swapCell.SetIsPositionTrue(true);
-                    }
-                }
-            }
-        }
-        Vector3 tempPosition = gameObject.transform.position;
-        gameObject.transform.position = swapObject.transform.position;
-        swapObject.transform.position = tempPosition;
+        ChangingPositions(swapObject, swapCell);
+        
+        Debug.Log("loading is done");
     }
-
+    public void SetPuzzlePieceGlow(bool outlinesEnabled)
+    {
+        int width = outlinesEnabled ? 4 : 0;
+        SpriteGlowEffect glowEffect = GetComponent<SpriteGlowEffect>();
+        glowEffect.OutlineWidth = width;
+        glowEffect.GlowBrightness = 1;
+        glowEffect.GlowColor = Color.white;
+    }
     public void SwapLeft()
     {
-        if (left.Equals(null))
+        if (left == null)
             return;
 
         SetTempValues();
 
-        swapObject = left;
-        swapCell = swapObject.GetComponent<SwapCell>();
+        GameObject swapObject = left;
+        SwapCell swapCell = swapObject.GetComponent<SwapCell>();
 
-        forward = swapCell.GetForward();
-        left = swapCell.GetLeft();
-        right = swapObject;
-        backward = swapCell.GetBackward();
+        SetForwardAdjacentsValue(swapObject);
+        SetRightAdjacentsValue(swapObject);
+        SetBackwardAdjacentsValue(swapObject);
+
+        swapCell.SetForwardAdjacentsValue(gameObject);
+        swapCell.SetLeftAdjacentsValue(gameObject);
+        swapCell.SetBackwardAdjacentsValue(gameObject);
+
+        SetForward(swapCell.GetForward());
+        SetRight(swapObject);
+        SetLeft(swapCell.GetLeft());
+        SetBackward(swapCell.GetBackward());
 
         swapCell.SetForward(tempForward);
         swapCell.SetBackward(tempBackward);
         swapCell.SetLeft(this.gameObject);
         swapCell.SetRight(tempRight);
 
+        ChangingPositions(swapObject, swapCell);
+        
+        Debug.Log("loading is done");
+    }
+
+    public void SwapRight()
+    {
+        if (right == null)
+            return;
+
+        SetTempValues();
+
+        GameObject swapObject = right;
+        SwapCell swapCell = swapObject.GetComponent<SwapCell>();
+
+        SetForwardAdjacentsValue(swapObject);
+        SetLeftAdjacentsValue(swapObject);
+        SetBackwardAdjacentsValue(swapObject);
+
+        swapCell.SetForwardAdjacentsValue(gameObject);
+        swapCell.SetRightAdjacentsValue(gameObject);
+        swapCell.SetBackwardAdjacentsValue(gameObject);
+
+        SetForward(swapCell.GetForward());
+        SetLeft(swapObject);
+        SetRight(swapCell.GetRight());
+        SetBackward(swapCell.GetBackward());
+
+        swapCell.SetForward(tempForward);
+        swapCell.SetBackward(tempBackward);
+        swapCell.SetLeft(tempLeft);
+        swapCell.SetRight(this.gameObject);
+
+        ChangingPositions(swapObject, swapCell);
+        
+        Debug.Log("loading is done");
+    }
+    
+    public void SwapForward()
+    {
+        if (forward == null)
+            return;
+
+        SetTempValues();
+
+        GameObject swapObject = forward;
+        SwapCell swapCell = swapObject.GetComponent<SwapCell>();
+
+        SetBackwardAdjacentsValue(swapObject);
+        SetLeftAdjacentsValue(swapObject);
+        SetRightAdjacentsValue(swapObject);
+
+        swapCell.SetForwardAdjacentsValue(gameObject);
+        swapCell.SetLeftAdjacentsValue(gameObject);
+        swapCell.SetRightAdjacentsValue(gameObject);
+
+        SetForward(swapCell.GetForward());
+        SetLeft(swapCell.GetLeft());
+        SetRight(swapCell.GetRight());
+        SetBackward(swapObject);
+
+        swapCell.SetForward(gameObject);
+        swapCell.SetBackward(tempBackward);
+        swapCell.SetLeft(tempLeft);
+        swapCell.SetRight(tempRight);
+
+        ChangingPositions(swapObject, swapCell);
+        
+        Debug.Log("loading is done");
+    }
+    public void SetRightAdjacentsValue(GameObject cell)
+    {
+        if(GetComponent<SwapCell>().GetRight() != null)
+            GetComponent<SwapCell>().GetRight().GetComponent<SwapCell>().SetLeft(cell);
+    }
+    public void SetLeftAdjacentsValue(GameObject cell)
+    {
+        if (GetComponent<SwapCell>().GetLeft() != null)
+            GetComponent<SwapCell>().GetLeft().GetComponent<SwapCell>().SetRight(cell);
+    }
+    public void SetForwardAdjacentsValue(GameObject cell)
+    {
+        if (GetComponent<SwapCell>().GetForward() != null)
+            GetComponent<SwapCell>().GetForward().GetComponent<SwapCell>().SetBackward(cell);
+    }
+    public void SetBackwardAdjacentsValue(GameObject cell)
+    {
+        if (GetComponent<SwapCell>().GetBackward() != null)
+            GetComponent<SwapCell>().GetBackward().GetComponent<SwapCell>().SetForward(cell);
+    }
+    private void ChangingPositions(GameObject swapObject, SwapCell swapCell)
+    {
         if (swapCell.GetIsPositionTrue().Equals(true))
         {
             SwapPuzzle.shiftedCellCount++;
@@ -253,11 +262,11 @@ public class SwapCell : MonoBehaviour
             }
             else
             {
-                if (truePosition.Equals(swapObject.transform.position))
+                if (truePosition.Equals(swapObject.GetComponent<RectTransform>().anchoredPosition))
                 {
                     SwapPuzzle.shiftedCellCount--;
                     SetIsPositionTrue(true);
-                    if (swapCell.GetTruePosition().Equals(gameObject.transform.position))
+                    if (swapCell.GetTruePosition().Equals(gameObject.GetComponent<RectTransform>().anchoredPosition))
                     {
                         SwapPuzzle.shiftedCellCount--;
                         swapCell.SetIsPositionTrue(true);
@@ -266,7 +275,7 @@ public class SwapCell : MonoBehaviour
                 }
                 else
                 {
-                    if (swapCell.GetTruePosition().Equals(gameObject.transform.position))
+                    if (swapCell.GetTruePosition().Equals(gameObject.GetComponent<RectTransform>().anchoredPosition))
                     {
                         SwapPuzzle.shiftedCellCount--;
                         swapCell.SetIsPositionTrue(true);
@@ -274,8 +283,8 @@ public class SwapCell : MonoBehaviour
                 }
             }
         }
-        Vector3 tempPosition = gameObject.transform.position;
-        gameObject.transform.position = swapObject.transform.position;
-        swapObject.transform.position = tempPosition;
+        Vector2 tempPosition = gameObject.GetComponent<RectTransform>().anchoredPosition;
+        gameObject.GetComponent<RectTransform>().anchoredPosition = swapObject.GetComponent<RectTransform>().anchoredPosition;
+        swapObject.GetComponent<RectTransform>().anchoredPosition = tempPosition;
     }
 }

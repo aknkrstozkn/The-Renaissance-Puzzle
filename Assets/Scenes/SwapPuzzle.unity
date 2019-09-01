@@ -267,7 +267,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 519420028}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3eaaf6938c3fffc46bfd02031d83aed7, type: 3}
+  m_Script: {fileID: 11500000, guid: 9053f417ef899844f83530c2628f1b55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &530764335
@@ -1009,7 +1009,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1882470111}
+      - m_Target: {fileID: 0}
         m_MethodName: CenterButtonClick
         m_Mode: 1
         m_Arguments:
@@ -1365,7 +1365,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Pieces Left
+  m_Text: Error Left
 --- !u!222 &1401368294
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1747,7 +1747,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1882470106}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 165089e8965e38e44aecc2bdbeb9f9b6, type: 3}
+  m_Script: {fileID: 11500000, guid: 7034b8920f226c840bc336e643532a47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   buttonClickClip: {fileID: 8300000, guid: 86ec6711a908ef442bfbb4948aef5307, type: 3}
