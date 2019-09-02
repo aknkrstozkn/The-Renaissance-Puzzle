@@ -28,15 +28,15 @@ public class SwapPuzzleController : MonoBehaviour
     void Awake()
     {
         firstTime = true;
-        
+        /*
         pieceCount = MainMenuManager.pieceCount;
         painting = MainMenuManager.painting;
         isRotateEnabled = MainMenuManager.isRotateOn;
+        */
         
-        /*
         pieceCount = 35;
         isRotateEnabled = true;
-        */
+        
 
         orthographSize = ((painting.textureRect.height / 100) * multiplier);
         

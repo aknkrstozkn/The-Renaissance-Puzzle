@@ -1,15 +1,6 @@
 ScriptsOnlyBuild:
   usedScripts:
     Assembly-CSharp.dll:
-    - AudioManager
-    - CameraController
-    - LevelAncient
-    - LevelFranz
-    - LevelMilitary
-    - LevelMonaLisa
-    - MainMenuManager
-    - RotatePuzzleController
-    - SliderController
     - SwapCameraController
     - SwapPuzzleController
     - SwapSliderController
@@ -37,9 +28,8 @@ ScriptsOnlyBuild:
     - UnityEngine.UI.Image
     - UnityEngine.UI.Slider
     - UnityEngine.UI.Text
-    - UnityEngine.UI.Toggle
   sceneClasses:
-    Assets/Scenes/MainMenu.unity:
+    Assets/Scenes/SwapPuzzle.unity:
     - Class: 1
       Script: {instanceID: 0}
     - Class: 4
@@ -56,147 +46,13 @@ ScriptsOnlyBuild:
       Script: {instanceID: 0}
     - Class: 81
       Script: {instanceID: 0}
-    - Class: 82
+    - Class: 83
+      Script: {instanceID: 0}
+    - Class: 92
       Script: {instanceID: 0}
     - Class: 104
       Script: {instanceID: 0}
     - Class: 109
-      Script: {instanceID: 0}
-    - Class: 114
-      Script: {instanceID: 15120}
-    - Class: 114
-      Script: {instanceID: 15206}
-    - Class: 114
-      Script: {instanceID: 15286}
-    - Class: 114
-      Script: {instanceID: 15326}
-    - Class: 114
-      Script: {instanceID: 15726}
-    - Class: 114
-      Script: {instanceID: 15746}
-    - Class: 114
-      Script: {instanceID: 15868}
-    - Class: 114
-      Script: {instanceID: 15952}
-    - Class: 114
-      Script: {instanceID: 16100}
-    - Class: 114
-      Script: {instanceID: 16318}
-    - Class: 114
-      Script: {instanceID: 16330}
-    - Class: 114
-      Script: {instanceID: 16338}
-    - Class: 114
-      Script: {instanceID: 16424}
-    - Class: 114
-      Script: {instanceID: 16564}
-    - Class: 114
-      Script: {instanceID: 16728}
-    - Class: 114
-      Script: {instanceID: 16746}
-    - Class: 114
-      Script: {instanceID: 16938}
-    - Class: 114
-      Script: {instanceID: 16954}
-    - Class: 115
-      Script: {instanceID: 0}
-    - Class: 128
-      Script: {instanceID: 0}
-    - Class: 157
-      Script: {instanceID: 0}
-    - Class: 213
-      Script: {instanceID: 0}
-    - Class: 222
-      Script: {instanceID: 0}
-    - Class: 223
-      Script: {instanceID: 0}
-    - Class: 224
-      Script: {instanceID: 0}
-    Assets/Scenes/RotatePuzzle.unity:
-    - Class: 1
-      Script: {instanceID: 0}
-    - Class: 4
-      Script: {instanceID: 0}
-    - Class: 20
-      Script: {instanceID: 0}
-    - Class: 21
-      Script: {instanceID: 0}
-    - Class: 28
-      Script: {instanceID: 0}
-    - Class: 48
-      Script: {instanceID: 0}
-    - Class: 81
-      Script: {instanceID: 0}
-    - Class: 83
-      Script: {instanceID: 0}
-    - Class: 92
-      Script: {instanceID: 0}
-    - Class: 104
-      Script: {instanceID: 0}
-    - Class: 114
-      Script: {instanceID: 15120}
-    - Class: 114
-      Script: {instanceID: 15286}
-    - Class: 114
-      Script: {instanceID: 15326}
-    - Class: 114
-      Script: {instanceID: 15554}
-    - Class: 114
-      Script: {instanceID: 15726}
-    - Class: 114
-      Script: {instanceID: 16038}
-    - Class: 114
-      Script: {instanceID: 16100}
-    - Class: 114
-      Script: {instanceID: 16144}
-    - Class: 114
-      Script: {instanceID: 16318}
-    - Class: 114
-      Script: {instanceID: 16504}
-    - Class: 114
-      Script: {instanceID: 16564}
-    - Class: 114
-      Script: {instanceID: 16938}
-    - Class: 114
-      Script: {instanceID: 16972}
-    - Class: 115
-      Script: {instanceID: 0}
-    - Class: 124
-      Script: {instanceID: 0}
-    - Class: 128
-      Script: {instanceID: 0}
-    - Class: 157
-      Script: {instanceID: 0}
-    - Class: 212
-      Script: {instanceID: 0}
-    - Class: 213
-      Script: {instanceID: 0}
-    - Class: 222
-      Script: {instanceID: 0}
-    - Class: 223
-      Script: {instanceID: 0}
-    - Class: 224
-      Script: {instanceID: 0}
-    Assets/Scenes/SwapPuzzle.unity:
-    - Class: 1
-      Script: {instanceID: 0}
-    - Class: 4
-      Script: {instanceID: 0}
-    - Class: 20
-      Script: {instanceID: 0}
-    - Class: 21
-      Script: {instanceID: 0}
-    - Class: 28
-      Script: {instanceID: 0}
-    - Class: 48
-      Script: {instanceID: 0}
-    - Class: 81
-      Script: {instanceID: 0}
-    - Class: 83
-      Script: {instanceID: 0}
-    - Class: 92
-      Script: {instanceID: 0}
-    - Class: 104
       Script: {instanceID: 0}
     - Class: 114
       Script: {instanceID: 15120}
@@ -209,15 +65,21 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 15726}
     - Class: 114
+      Script: {instanceID: 15746}
+    - Class: 114
       Script: {instanceID: 15928}
     - Class: 114
       Script: {instanceID: 16100}
     - Class: 114
       Script: {instanceID: 16318}
     - Class: 114
+      Script: {instanceID: 16330}
+    - Class: 114
       Script: {instanceID: 16504}
     - Class: 114
       Script: {instanceID: 16564}
+    - Class: 114
+      Script: {instanceID: 16728}
     - Class: 114
       Script: {instanceID: 16842}
     - Class: 114
@@ -761,7 +623,5 @@ ScriptsOnlyBuild:
     className: PlayableTrack
   platform: 19
   scenePathNames:
-  - Assets/Scenes/MainMenu.unity
-  - Assets/Scenes/RotatePuzzle.unity
   - Assets/Scenes/SwapPuzzle.unity
   playerPath: C:/Users/akinkursatozkan/Desktop/puzzle/The-Renaissance-Puzzle.exe
