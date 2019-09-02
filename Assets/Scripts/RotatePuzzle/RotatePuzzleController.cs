@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class RotatePuzzleController : MonoBehaviour
 {
@@ -22,10 +23,13 @@ public class RotatePuzzleController : MonoBehaviour
     public static Material glowMaterial;
     public static Shader glowShader;
     float orthographSize;
+
+    
     void Awake()
     {
         firstTime = true;
-        pieceCount = 35;
+        pieceCount = MainMenuManager.pieceCount;
+        painting = MainMenuManager.painting;
         orthographSize = ((painting.textureRect.height / 100) * multiplier);
         Camera.main.orthographicSize = orthographSize;
         winText.gameObject.SetActive(false);
@@ -64,6 +68,11 @@ public class RotatePuzzleController : MonoBehaviour
             return true;
 
         return false;
+    }
+    public void Exit()
+    {
+        MainMenuManager.isReady = false;
+        SceneManager.LoadScene(0);
     }
     public void CenterButtonClick()
     {

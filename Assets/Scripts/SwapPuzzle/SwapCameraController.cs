@@ -46,7 +46,7 @@ public class SwapCameraController : MonoBehaviour
     }
     */
     
-    private void Awake()
+    private void Start()
     {
         
         orthographicSize = Camera.main.orthographicSize;     

@@ -8,17 +8,21 @@ public class SwapSliderController : MonoBehaviour
     // Start is called before the first frame update
     readonly float wheelNumber  = 10f;
     float orthographSize;
+    Camera swapCamera;
     void Start()
     {
-        orthographSize = Camera.main.orthographicSize * 100;
+        swapCamera = Camera.main;
+        
+        orthographSize = swapCamera.orthographicSize * 100;
         gameObject.GetComponent<Slider>().value = 0;
         gameObject.GetComponent<Slider>().maxValue = orthographSize - 1;
         gameObject.GetComponent<Slider>().minValue = 0;
+
     }
 
     public void OnValueChange()
     {
-        Camera.main.orthographicSize = 
+        swapCamera.orthographicSize = 
             (orthographSize - gameObject.GetComponent<Slider>().value) / 100;
         
     }
@@ -40,6 +44,7 @@ public class SwapSliderController : MonoBehaviour
     void Update()
     {
         OnValueChangeWheel();
+        Debug.Log(swapCamera.orthographicSize * 100);
         
     }
 }

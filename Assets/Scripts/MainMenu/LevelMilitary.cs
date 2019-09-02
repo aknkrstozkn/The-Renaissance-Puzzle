@@ -1,0 +1,28 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class LevelMilitary : MonoBehaviour
+{
+    // Start is called before the first frame update
+    void Start()
+    {
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+
+    public void OnClick()
+    {
+        MainMenuManager.pieceCount = int.Parse(gameObject.name);
+        MainMenuManager.painting = MainMenuManager.paintings[1];
+        MainMenuManager.isReady = true;
+
+        Debug.Log(MainMenuManager.pieceCount);
+
+    }
+}

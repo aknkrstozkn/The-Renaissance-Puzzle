@@ -64,6 +64,11 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\AudioManager.cs" />
     <Compile Include="Assets\Scripts\GlowEffect.cs" />
+    <Compile Include="Assets\Scripts\MainMenu\LevelAncient.cs" />
+    <Compile Include="Assets\Scripts\MainMenu\LevelFranz.cs" />
+    <Compile Include="Assets\Scripts\MainMenu\LevelMilitary.cs" />
+    <Compile Include="Assets\Scripts\MainMenu\LevelMonaLisa.cs" />
+    <Compile Include="Assets\Scripts\MainMenu\MainMenuManager.cs" />
     <Compile Include="Assets\Scripts\RotatePuzzle\CameraController.cs" />
     <Compile Include="Assets\Scripts\RotatePuzzle\RotatePuzzle.cs" />
     <Compile Include="Assets\Scripts\RotatePuzzle\RotatePuzzleController.cs" />

@@ -624,13 +624,28 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\AudioManager.cs" />
+    <Compile Include="Assets\Scripts\GlowEffect.cs" />
+    <Compile Include="Assets\Scripts\MainMenu\LevelAncient.cs" />
+    <Compile Include="Assets\Scripts\MainMenu\LevelFranz.cs" />
+    <Compile Include="Assets\Scripts\MainMenu\LevelMilitary.cs" />
+    <Compile Include="Assets\Scripts\MainMenu\LevelMonaLisa.cs" />
+    <Compile Include="Assets\Scripts\MainMenu\MainMenuManager.cs" />
     <Compile Include="Assets\Scripts\RotatePuzzle\CameraController.cs" />
     <Compile Include="Assets\Scripts\RotatePuzzle\RotatePuzzle.cs" />
     <Compile Include="Assets\Scripts\RotatePuzzle\RotatePuzzleController.cs" />
     <Compile Include="Assets\Scripts\RotatePuzzle\SliderController.cs" />
     <Compile Include="Assets\Scripts\RotatePuzzle\TouchRotate.cs" />
+    <Compile Include="Assets\Scripts\SwapPuzzle\SwapCameraController.cs" />
+    <Compile Include="Assets\Scripts\SwapPuzzle\SwapCell.cs" />
+    <Compile Include="Assets\Scripts\SwapPuzzle\SwapPuzzle.cs" />
+    <Compile Include="Assets\Scripts\SwapPuzzle\SwapPuzzleController.cs" />
+    <Compile Include="Assets\Scripts\SwapPuzzle\SwapSliderController.cs" />
+    <Compile Include="Assets\Scripts\SwapPuzzle\TouchSwapCell.cs" />
+    <Compile Include="Assets\SpriteGlow\SpriteGlowEffect.cs" />
+    <Compile Include="Assets\SpriteGlow\SpriteGlowMaterial.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\SpriteGlow\SpriteOutline.shader" />
     <None Include="Assets\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />

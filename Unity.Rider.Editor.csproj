@@ -655,6 +655,7 @@
     <Compile Include="Packages\com.unity.ide.rider\Rider\Editor\Utility.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\SpriteGlow\SpriteOutline.shader" />
     <None Include="Assets\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />

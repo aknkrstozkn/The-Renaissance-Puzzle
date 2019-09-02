@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class SwapPuzzleController : MonoBehaviour
 {
@@ -27,15 +28,28 @@ public class SwapPuzzleController : MonoBehaviour
     void Awake()
     {
         firstTime = true;
+        
+        pieceCount = MainMenuManager.pieceCount;
+        painting = MainMenuManager.painting;
+        isRotateEnabled = MainMenuManager.isRotateOn;
+        
+        /*
         pieceCount = 35;
         isRotateEnabled = true;
+        */
 
         orthographSize = ((painting.textureRect.height / 100) * multiplier);
+        
         Camera.main.orthographicSize = orthographSize;
         winText.gameObject.SetActive(false);
         swapPuzzle = new SwapPuzzle(isRotateEnabled, painting, pieceCount, cellsParent, glowMaterial, glowShader);
         swapPuzzle.BuildSwapPuzzle();
 
+    }
+    public void Exit()
+    {
+        MainMenuManager.isReady = false;
+        SceneManager.LoadScene(0);
     }
     public void Swap()
     {
