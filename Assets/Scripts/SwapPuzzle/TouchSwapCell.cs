@@ -39,8 +39,7 @@ public class TouchSwapCell : MonoBehaviour
             {
                 SwapPuzzle.selectedCell.GetComponent<SwapCell>().SetPuzzlePieceGlow(false);
                 SwapPuzzle.selectedCell = gameObject;
-                gameObject.GetComponent<SwapCell>().SetPuzzlePieceGlow(true);
-                
+                gameObject.GetComponent<SwapCell>().SetPuzzlePieceGlow(true);                
 
                 GameObject forward = gameObject.GetComponent<SwapCell>().GetForward();
                 Vector2 forwardPos;

@@ -44,7 +44,6 @@ public class SwapSliderController : MonoBehaviour
     void Update()
     {
         OnValueChangeWheel();
-        Debug.Log(swapCamera.orthographicSize * 100);
         
     }
 }

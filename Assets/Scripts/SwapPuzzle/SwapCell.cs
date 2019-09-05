@@ -8,7 +8,7 @@ public class SwapCell : MonoBehaviour
     // Start is called before the first frame update
     private bool isPositionTrue;
     private Vector2 truePosition;
-
+    private int maxGlowWidth;
     private GameObject forward;
     private GameObject tempForward;
     private GameObject backward;
@@ -16,8 +16,18 @@ public class SwapCell : MonoBehaviour
     private GameObject right;
     private GameObject tempRight;
     private GameObject left;
-    private GameObject tempLeft;    
-    
+    private GameObject tempLeft;
+
+
+    public void SetMaxGlowWidth(int maxGlowWidth)
+    {
+        this.maxGlowWidth = maxGlowWidth;
+    }
+
+    public int GetMaxGlowWidth()
+    {
+        return maxGlowWidth;   
+    }
     private void SetTempValues()
     {
         tempForward = forward;
@@ -116,11 +126,12 @@ public class SwapCell : MonoBehaviour
     }
     public void SetPuzzlePieceGlow(bool outlinesEnabled)
     {
-        int width = outlinesEnabled ? 4 : 0;
+        
+        int width = outlinesEnabled ? maxGlowWidth : 0;
         SpriteGlowEffect glowEffect = GetComponent<SpriteGlowEffect>();
         glowEffect.OutlineWidth = width;
         glowEffect.GlowBrightness = 1;
-        glowEffect.GlowColor = Color.white;
+        glowEffect.GlowColor = Color.red;
     }
     public void SwapLeft()
     {

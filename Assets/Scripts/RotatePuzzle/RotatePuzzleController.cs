@@ -1,16 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class RotatePuzzleController : MonoBehaviour
 {
-    [SerializeField]
-    private AudioClip buttonClickClip;
-    [SerializeField]
-    private Slider slider;
+    //[SerializeField]
+    //private AudioClip buttonClickClip;
 
     public GameObject cellsParent;
     private int pieceCount;
@@ -28,25 +24,18 @@ public class RotatePuzzleController : MonoBehaviour
     void Awake()
     {
         firstTime = true;
+
         pieceCount = MainMenuManager.pieceCount;
-        painting = MainMenuManager.painting;
+        painting = MainMenuManager.painting;  
+
         orthographSize = ((painting.textureRect.height / 100) * multiplier);
         Camera.main.orthographicSize = orthographSize;
         winText.gameObject.SetActive(false);
         rotatePuzzle = new RotatePuzzle(painting, pieceCount, cellsParent, glowMaterial, glowShader);
         rotatePuzzle.BuildRotatePuzzle();
-        ArrangeWinPaint();
-
-
 
     }
-    void ArrangeWinPaint()
-    {
-        //winPaint.gameObject.SetActive(false);
-        //winPaint.GetComponent<RectTransform>().sizeDelta =
-        //    new Vector2(painting.texture.width, painting.texture.height);
-        //winPaint.sprite = painting;
-    }
+
     private void Update()
     {
         countText.text = RotatePuzzle.falseCellCount.ToString();
@@ -61,7 +50,21 @@ public class RotatePuzzleController : MonoBehaviour
         }
            
     }
-
+    public void ShowPaint(Button buttonShowPaint)
+    {
+        int order = cellsParent.GetComponent<SpriteRenderer>().sortingOrder;
+        if (order == 1)
+        {
+            cellsParent.GetComponent<SpriteRenderer>().sortingOrder = 0;
+            buttonShowPaint.GetComponentInChildren<Text>().text = "Show Paint";
+        }
+        else
+        {
+            cellsParent.GetComponent<SpriteRenderer>().sortingOrder = 1;
+            buttonShowPaint.GetComponentInChildren<Text>().text = "Hide Paint";
+        }
+            
+    }
     public bool IsWin()
     {
         if (RotatePuzzle.falseCellCount == 0)
@@ -78,11 +81,12 @@ public class RotatePuzzleController : MonoBehaviour
     {
         Camera.main.orthographicSize = orthographSize;
         Camera.main.transform.position = new Vector3(0f, 0f, Camera.main.transform.position.z);
-        slider.value = 0;
+        GameObject.FindGameObjectWithTag("Slider").GetComponent<Slider>().value = 0;
 
     }
+    /*
     public void ButtonClick()
     {
         AudioManager.instance.PlayOnce(buttonClickClip);
-    }
+    }*/
 } 

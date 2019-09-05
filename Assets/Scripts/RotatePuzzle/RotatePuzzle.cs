@@ -9,9 +9,9 @@ public class RotatePuzzle
 {
     public static int falseCellCount = 70;
     
-    private int pixel;
-    private int heightSteps;
-    private int widthSteps;
+    private float pixel;
+    private float heightSteps;
+    private float widthSteps;
 
     private GameObject[] cells;
     private Texture2D[] pieces;
@@ -43,32 +43,27 @@ public class RotatePuzzle
         widthSteps = GetSteps(painting.texture.width / 100);
         falseCellCount = pieceCount;
         pieces = new Texture2D[pieceCount];
-        Debug.Log("cells: " + cells +
-            " pixel: " + pixel +
-            " heightSteps: " + heightSteps +
-            " widthSteps: " + widthSteps +
-            " falseCellCount: " + falseCellCount);
     }
     private void BuildCells()    {
         //Cell properties
         Vector2 pivot = new Vector2(0.5f, 0.5f);
         Rect rec = new Rect(0, 0, pixel * 100, pixel * 100);
         //------------------------------
-        for (int i = 0; i < widthSteps; i++)
-            for (int j = 0; j < heightSteps; j++)
+        for (float i = 0; i < widthSteps; i++)
+            for (float j = 0; j < heightSteps; j++)
             {
-                int index = (i * heightSteps) + j;
+                int index = (int)((i * heightSteps) + j);
 
                 BuilCell(index, i, j, pivot, rec);
             }
         
     }
-    private RuntimeAnimatorController animatorController = null;
-    private void BuilCell(int index, int i, int j, Vector2 pivot, Rect rec)
+    
+    private void BuilCell(int index, float i, float j, Vector2 pivot, Rect rec)
     {
         //Cordinates for cell
-        float xCordinate = (pixel * i) + ((float)pixel / 2);
-        float yCordinate = (pixel * j) + ((float)pixel / 2);
+        float xCordinate = (pixel * i) + (pixel / 2);
+        float yCordinate = (pixel * j) + (pixel / 2);
         //Creating cells
         GameObject cell = new GameObject();       
        
@@ -94,8 +89,8 @@ public class RotatePuzzle
         rectTransform.anchorMax = new Vector2(0f, 0f);
         rectTransform.anchoredPosition = new Vector3(x: xCordinate, y: yCordinate);
         //Creating Sprite Texture---------------------------------------------------------------------
-        Texture2D spriteTexture = new Texture2D(pixel * 100, pixel * 100);
-        var pixels = painting.texture.GetPixels((pixel * 100) * i, (pixel * 100) * j, (pixel * 100), (pixel * 100));        
+        Texture2D spriteTexture = new Texture2D((int)(pixel * 100f), (int)(pixel * 100f));
+        var pixels = painting.texture.GetPixels((int)((pixel * 100f) * i), (int)((pixel * 100f) * j), (int)(pixel * 100f), (int)(pixel * 100f));        
         spriteTexture.SetPixels(pixels);
         spriteTexture.Apply();
         //------------------------------------------------------------------------------------
@@ -109,7 +104,8 @@ public class RotatePuzzle
 
         glowEffect.OutlineWidth = 0;
         glowEffect.AlphaThreshold = 0.01f;
-
+        //-----------------------
+        CountFalseCells(cell);
         //Finally, adding our cell to the list.
         cells.SetValue(cell, index);
     }
@@ -117,30 +113,23 @@ public class RotatePuzzle
     {
         SetCellsParentSprite();
         BuildCells();
-        CountFalseCells();
-
-        //cellsParent.enabled = false;
 
     }
-    
-    
-    private void CountFalseCells()
+
+    private void CountFalseCells(GameObject cell)
     {
-        foreach (GameObject cell in cells)
+        if (cell.transform.eulerAngles.z < 90)
         {
-            if (cell.transform.eulerAngles.z < 90)
-            {
-                falseCellCount--;
-            }
+            falseCellCount--;
         }
 
     }
-    private int CalculatePixel()
+    private float CalculatePixel()
     {
-        int area = (painting.texture.height / 100) * (painting.texture.width / 100);
-        return (int)Mathf.Sqrt(area / pieceCount);
+        float area = ((float)painting.texture.height / 100f) * ((float)painting.texture.width / 100f);
+        return Mathf.Sqrt(area / (float)pieceCount);
     }
-    private int GetSteps(int dimension)
+    private float GetSteps(float dimension)
     {
         return dimension / pixel;
     }

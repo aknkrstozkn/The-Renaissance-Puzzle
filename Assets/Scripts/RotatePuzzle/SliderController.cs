@@ -8,11 +8,10 @@ public class SliderController : MonoBehaviour
     // Start is called before the first frame update
     readonly float wheelNumber  = 10f;
     float orthographSize;
-    Camera camera;
     void Start()
     {
-        camera = Camera.main;
-        orthographSize = camera.orthographicSize * 100;
+        
+        orthographSize = Camera.main.orthographicSize * 100;
         gameObject.GetComponent<Slider>().value = 0;
         gameObject.GetComponent<Slider>().maxValue = orthographSize - 1;
         gameObject.GetComponent<Slider>().minValue = 0;
@@ -20,7 +19,7 @@ public class SliderController : MonoBehaviour
 
     public void OnValueChange()
     {
-        camera.orthographicSize = 
+        Camera.main.orthographicSize = 
             (orthographSize - gameObject.GetComponent<Slider>().value) / 100;
         
     }

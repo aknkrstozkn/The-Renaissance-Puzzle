@@ -4,114 +4,184 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using SpriteGlow;
+using System;
 
 public class SwapPuzzle
 {
+    //Errors.....
     public static int invertedCellCount;
     public static int shiftedCellCount;
-
-    public static Dictionary<Vector2, GameObject> positionOfCells;
+    //Random positions of cells
+    private Dictionary<Vector2, GameObject> randomPositionsOfCells;
+    private ArrayList truePositionsOfCells;
+    private ArrayList falsePositionsOfCells;
     public static GameObject selectedCell;
-    
+    //Complexity
+    private float complexityFactor;
+    //To Check if rotate is enable
     public static bool isRotateEnabled;
-
+    //Painting values
     private float pixel;
-    private int heightSteps;
-    private int widthSteps;
-
+    private float heightSteps;
+    private float widthSteps;
+    //Storing cells
     private GameObject[] cells;
     private Texture2D[] pieces;
-
+    //Values to build cells
     private Sprite painting;
     private GameObject cellsParent;
     private int pieceCount;
-
+    //To generate random angels for Cells
     private readonly int[] zDegrees = { 0, 90, 180, 270 };
-
-    public Material glowMaterial;
-    public Shader glowShader;
+    //Shader for glowing effect
+    private Shader glowShader;
 
     public GameObject[] GetCells()
     {
         return cells;
     }
-    public SwapPuzzle(bool isRotateEnabled, Sprite painting, int pieceCount, GameObject cellsParent, Material glowMaterial, Shader glowShader)
+    public SwapPuzzle(float complexityFactor, bool isRotateEnabled, Sprite painting, int pieceCount, GameObject cellsParent, Shader glowShader)
     {
         SwapPuzzle.isRotateEnabled = isRotateEnabled;
         
         this.painting = painting;
         this.pieceCount = pieceCount;
         this.cellsParent = cellsParent;
-        this.glowMaterial = glowMaterial;
         this.glowShader = glowShader;
+
+        this.complexityFactor = complexityFactor;
 
         cells = new GameObject[pieceCount];        
         pixel = CalculatePixel();
-        heightSteps = GetSteps(painting.texture.height / 100);
-        widthSteps = GetSteps(painting.texture.width / 100);
-
+        heightSteps = GetSteps((float)painting.texture.height / 100f);
+        widthSteps = GetSteps((float)painting.texture.width / 100f);
         invertedCellCount = pieceCount;
         shiftedCellCount = pieceCount;
 
         pieces = new Texture2D[pieceCount];
+
+        truePositionsOfCells = new ArrayList();
+        falsePositionsOfCells = new ArrayList();
     }
-    private void BuildCells()    {
-        positionOfCells = new Dictionary<Vector2, GameObject>();
-        //Cell properties
+    private void BuildCells()
+    {
+        
+        SetFalsePositionsOfCells();
+        ArrayList tempFalsePositionIndexes = new ArrayList(falsePositionsOfCells);
+        //Saving position of cells to check adjacents
+        randomPositionsOfCells = new Dictionary<Vector2, GameObject>();
+        //Cell glow width
+        int maxGlowWidth = pixel < 1 ? 3 :
+                (pixel < 3 ? 6 : 8);
+        //To generate random cell position    
+        //Position properties for sprites of cells
         Vector2 pivot = new Vector2(0.5f, 0.5f);
         Rect rec = new Rect(0, 0, pixel * 100, pixel * 100);
-        //------------------------------
-        Vector2[] ramdomCellPosition = RandomCellPositions();
+        Vector2 position;
         for (float i = 0; i < widthSteps; i++)
         {
-            
-            float xCordinate = (pixel * i) + ((float)pixel / 2);
+            float xCordinate = (pixel * i) + (pixel / 2f);
             for (float j = 0; j < heightSteps; j++)
             {
                 int index = (int)((i * heightSteps) + j);
-                float yCordinate = (pixel * j) + ((float)pixel / 2);
-
-                BuilCell(ramdomCellPosition[index], index, i, j, pivot, rec);
-                positionOfCells.Add(ramdomCellPosition[index], cells[index]);
-
-            }
-            
+                float yCordinate = (pixel * j) + (pixel / 2f);
+                Vector2 truePosition = new Vector2(xCordinate, yCordinate);
+                if (tempFalsePositionIndexes.Contains(index))
+                {
+                    position = GenareteRandomPosition(index);
+                    Debug.Log("F: " + index);
+                }                    
+                else
+                {
+                    position = truePosition;
+                    Debug.Log("T: " + index);
+                }
+                BuilCell(position, index, i, j, pivot, rec, maxGlowWidth);
+                randomPositionsOfCells.Add(position, cells[index]); 
+            }            
         }
-        selectedCell = positionOfCells[new Vector2((pixel / 2f),(pixel / 2f))];
+        selectedCell = randomPositionsOfCells[new Vector2((pixel / 2f),(pixel / 2f))];
         selectedCell.GetComponent<SwapCell>().SetPuzzlePieceGlow(true);
     }
 
-    private Vector2[] RandomCellPositions()
+    private Vector2 GenareteRandomPosition(int index)
     {
-        ArrayList indexes = new ArrayList();
-        for (int k = 0; k < pieceCount; k++)
-            indexes.Add(k);
-                
-        int tempPieceCount = pieceCount;
+        Vector2 position;
+        if (falsePositionsOfCells.Contains(index) && falsePositionsOfCells.Count > 1)
+        {
+            falsePositionsOfCells.Remove(index);
+            int tempIndex = UnityEngine.Random.Range(0, falsePositionsOfCells.Count);
+            position = IndexToPosition((int)falsePositionsOfCells[tempIndex]);
+            falsePositionsOfCells.RemoveAt(tempIndex);
+            falsePositionsOfCells.Add(index);
+        }
+        else
+        {
+            int tempIndex = UnityEngine.Random.Range(0, falsePositionsOfCells.Count);
+            position = IndexToPosition((int)falsePositionsOfCells[tempIndex]);
+            falsePositionsOfCells.RemoveAt(tempIndex);
+        }
+        
+       
 
-        Vector2[] cellPositions = new Vector2[pieceCount];
+        return position;
+
+    }
+    private Vector2 IndexToPosition(int index)
+    {
+        int i = index / (int)heightSteps;
+        int j = index % (int)heightSteps;
+        float xCordinate = (i * pixel) + (pixel / 2f);
+        float yCordinate = (j * pixel) + (pixel / 2f);
+        
+        return new Vector2(xCordinate, yCordinate);
+    }
+    private void SetFalsePositionsOfCells()
+    {
+        int tempPieceCount = pieceCount;
+        int falseCount = (int)Math.Round(pieceCount / complexityFactor);
+        Debug.Log("falseCount : " + falseCount);
+        ArrayList indexes = new ArrayList();
+
+        for (int i = 0; i < pieceCount; i++)
+            indexes.Add(i);        
+        
+        for (int i = 0; i < falseCount; i++)
+        {
+            int tempIndex = UnityEngine.Random.Range(0, tempPieceCount);
+            falsePositionsOfCells.Add((int)indexes[tempIndex]);
+            Debug.Log("FALSE: " + (int)indexes[tempIndex]);
+            indexes.RemoveAt(tempIndex);
+            tempPieceCount--;
+        }        
+    }
+    private void CellPositions(float tempComplexityFactor)
+    {   
+        Vector2 position;
         for (float i = 0; i < widthSteps; i++)
         {
-            float xCordinate = ((float)pixel * i) + ((float)pixel / 2f);
+            float xCordinate = (pixel * i) + (pixel / 2f);
             for (float j = 0; j < heightSteps; j++)
             {
-                int tempIndex = Random.Range(0, tempPieceCount);
-                int index = (int)indexes[tempIndex];
-                indexes.RemoveAt(tempIndex);
-                tempPieceCount--;
+                int index = (int)((i * heightSteps) + j) + 1;
+                float yCordinate = (pixel * j) + (pixel / 2f);
 
+                position = new Vector2(x: xCordinate, y: yCordinate);
+                if (index < complexityFactor)
+                    truePositionsOfCells.Add(position);
+                else
+                {
+                    falsePositionsOfCells.Add(position);
+                    complexityFactor += tempComplexityFactor;
+                }        
+                                    
 
-                float yCordinate = ((float)pixel * j) + ((float)pixel / 2f);
-
-                cellPositions.SetValue(new Vector2(xCordinate, yCordinate), index);
                 
             }
         }
-        return cellPositions;
+        
     }
-
-    private RuntimeAnimatorController animatorController = null;
-    private void BuilCell(Vector2 randomCellPosition, int index, float i, float j, Vector2 pivot, Rect rec)
+    private void BuilCell(Vector2 randomCellPosition, int index, float i, float j, Vector2 pivot, Rect rec, int maxGlowWidth)
     {
         //Cordinates for cell
         float xCordinate = (pixel * i) + (pixel / 2f);
@@ -128,7 +198,7 @@ public class SwapPuzzle
         //Creating with z: +90 position, because default z position is -180 and we want it to be 0
         if (isRotateEnabled)
             cell.transform.SetPositionAndRotation(randomCellPosition,
-            Quaternion.Euler(0, 0, zDegrees[Random.Range(0, 4)]));
+            Quaternion.Euler(0, 0, zDegrees[UnityEngine.Random.Range(0, 4)]));
         else
             cell.transform.SetPositionAndRotation(randomCellPosition,
             Quaternion.Euler(0, 0, 0));
@@ -156,10 +226,9 @@ public class SwapPuzzle
         SpriteRenderer spriteRenderer = cell.AddComponent<SpriteRenderer>() as SpriteRenderer;
         spriteRenderer.sprite = Sprite.Create(spriteTexture, rec, pivot);
         spriteRenderer.sortingLayerName = "Cells";
-        spriteRenderer.material = glowMaterial;
         spriteRenderer.material.shader = glowShader;
         //GlowEffect----------------
-        SpriteGlowEffect glowEffect = cell.AddComponent<SpriteGlowEffect>();
+        SpriteGlowEffect glowEffect = cell.AddComponent<SpriteGlowEffect>();        
         glowEffect.OutlineWidth = 0;
         glowEffect.AlphaThreshold = 0.01f;
         //-------------------------
@@ -167,11 +236,13 @@ public class SwapPuzzle
         SwapCell swapCell = cell.AddComponent<SwapCell>();
         swapCell.SetTruePosition(new Vector2(xCordinate, yCordinate));
         swapCell.SetIsPositionTrue(swapCell.GetTruePosition().Equals(randomCellPosition));
+        swapCell.SetMaxGlowWidth(maxGlowWidth);
         swapCell.SetForward(null);
         swapCell.SetBackward(null);
         swapCell.SetLeft(null);
         swapCell.SetRight(null);
         //-----------------------
+        CountFalseCells(cell);
         //Finally, adding our cell to the list.
         cells.SetValue(cell, index);
     }
@@ -179,7 +250,6 @@ public class SwapPuzzle
     {
         SetCellsParentSprite();
         BuildCells();
-        CountFalseCells();
         SetSwapCellsAdjacents();
     }
 
@@ -191,45 +261,38 @@ public class SwapPuzzle
 
             float xCordinate = cell.GetComponent<RectTransform>().anchoredPosition.x;
             float yCordinate = cell.GetComponent<RectTransform>().anchoredPosition.y;
-
-            Debug.Log("x: " + xCordinate.ToString() + " y: " + yCordinate.ToString());
-
             
 
-            if (positionOfCells.ContainsKey(new Vector2(xCordinate, yCordinate + pixel)))
-                swapCell.SetForward(positionOfCells[new Vector2(xCordinate, yCordinate + pixel)]);         
+            if (randomPositionsOfCells.ContainsKey(new Vector2(xCordinate, yCordinate + pixel)))
+                swapCell.SetForward(randomPositionsOfCells[new Vector2(xCordinate, yCordinate + pixel)]);         
                
-            if(positionOfCells.ContainsKey(new Vector2(xCordinate, yCordinate - pixel)))
-                swapCell.SetBackward(positionOfCells[new Vector2(xCordinate, yCordinate - pixel)]);
+            if(randomPositionsOfCells.ContainsKey(new Vector2(xCordinate, yCordinate - pixel)))
+                swapCell.SetBackward(randomPositionsOfCells[new Vector2(xCordinate, yCordinate - pixel)]);
 
-            if(positionOfCells.ContainsKey(new Vector2(xCordinate + pixel, yCordinate)))
-                swapCell.SetRight(positionOfCells[new Vector2(xCordinate + pixel, yCordinate)]);
+            if(randomPositionsOfCells.ContainsKey(new Vector2(xCordinate + pixel, yCordinate)))
+                swapCell.SetRight(randomPositionsOfCells[new Vector2(xCordinate + pixel, yCordinate)]);
 
-            if (positionOfCells.ContainsKey(new Vector2(xCordinate - pixel, yCordinate)))
-                swapCell.SetLeft(positionOfCells[new Vector2(xCordinate - pixel, yCordinate)]);
+            if (randomPositionsOfCells.ContainsKey(new Vector2(xCordinate - pixel, yCordinate)))
+                swapCell.SetLeft(randomPositionsOfCells[new Vector2(xCordinate - pixel, yCordinate)]);
 
         }
     }
 
-    private void CountFalseCells()
+    private void CountFalseCells(GameObject cell)
     {
-        foreach (GameObject cell in cells)
-        {
-            if (cell.transform.eulerAngles.z < 90)
-                invertedCellCount--;
-            if (cell.GetComponent<SwapCell>().GetIsPositionTrue().Equals(true))
-                shiftedCellCount--;            
-        }
-
+        if (cell.transform.eulerAngles.z < 90)
+            invertedCellCount--;
+        if (cell.GetComponent<SwapCell>().GetIsPositionTrue().Equals(true))
+            shiftedCellCount--;
     }
     private float CalculatePixel()
     {
-        float area = ((float)painting.texture.height / 100f) * ((float)painting.texture.width / 100f);
-        return Mathf.Sqrt(area / pieceCount);
+        float area = ((float)painting.texture.height) * ((float)painting.texture.width);
+        return Mathf.Sqrt(area / (float)(pieceCount)) / 100f;
     }
-    private int GetSteps(float dimension)
+    private float GetSteps(float dimension)
     {
-        return (int)(dimension / pixel);
+        return (dimension / pixel);
     }
     private void SetCellsParentSprite()
     {

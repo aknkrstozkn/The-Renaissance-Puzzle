@@ -7,43 +7,71 @@ using UnityEngine.SceneManagement;
 
 public class SwapPuzzleController : MonoBehaviour
 {
-    [SerializeField]
-    private AudioClip buttonClickClip;
-    [SerializeField]
-    private Slider slider;
+    //[SerializeField]
+    //private AudioClip buttonClickClip;
 
-    private bool isRotateEnabled;
-
+    
+    //These Values are to make puzzle
+    //---------------------------
     public GameObject cellsParent;
-    private int pieceCount;
     private SwapPuzzle swapPuzzle;
-    readonly float multiplier = 0.5f;
-    public Sprite painting;
-    bool firstTime;
-    public TextMeshProUGUI winText;
-    public TextMeshProUGUI countText;
-    public static Material glowMaterial;
     public static Shader glowShader;
-    float orthographSize;
+    readonly float multiplier = 0.5f;
+    //Values Whoes come from Main Menu
+    private bool isRotateEnabled;
+    private int pieceCount;
+    public Sprite painting;
+    //---------------------------
+
+    //Win Screen
+    public TextMeshProUGUI winText;
+    private bool firstTime;
+
+    //To print Error count
+    public TextMeshProUGUI countText;    
+    
+    //To save first Cameras OrthographSize
+    private float orthographSize;
+
+    //Swap Values for delay and auto-swap
+    float interval = 0.3f;
+    float nextTime = 0;
+    private bool isKeyUp;
+    private KeyCode keyCode;
     void Awake()
     {
         firstTime = true;
+
         /*
         pieceCount = MainMenuManager.pieceCount;
         painting = MainMenuManager.painting;
         isRotateEnabled = MainMenuManager.isRotateOn;
         */
-        
-        pieceCount = 35;
-        isRotateEnabled = true;
-        
+        pieceCount = 72;
+        isRotateEnabled = false;
+        float complexity = 1.0f / 0.5f;
 
         orthographSize = ((painting.textureRect.height / 100) * multiplier);
         
         Camera.main.orthographicSize = orthographSize;
         winText.gameObject.SetActive(false);
-        swapPuzzle = new SwapPuzzle(isRotateEnabled, painting, pieceCount, cellsParent, glowMaterial, glowShader);
+        swapPuzzle = new SwapPuzzle(complexity, isRotateEnabled, painting, pieceCount, cellsParent, glowShader);
         swapPuzzle.BuildSwapPuzzle();
+
+    }
+    public void ShowPaint(Button buttonShowPaint)
+    {
+        int order = cellsParent.GetComponent<SpriteRenderer>().sortingOrder;
+        if (order == 1)
+        {
+            cellsParent.GetComponent<SpriteRenderer>().sortingOrder = 0;
+            buttonShowPaint.GetComponentInChildren<Text>().text = "Show Paint";
+        }
+        else
+        {
+            cellsParent.GetComponent<SpriteRenderer>().sortingOrder = 1;
+            buttonShowPaint.GetComponentInChildren<Text>().text = "Hide Paint";
+        }
 
     }
     public void Exit()
@@ -51,35 +79,87 @@ public class SwapPuzzleController : MonoBehaviour
         MainMenuManager.isReady = false;
         SceneManager.LoadScene(0);
     }
-    public void Swap()
+
+    private void AutoSwap(KeyCode key)
     {
-        if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+        if (key == KeyCode.A || key == KeyCode.LeftArrow)
         {
             SwapPuzzle.selectedCell.GetComponent<SwapCell>().SwapLeft();
         }
-        if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
+
+        if (key == KeyCode.RightArrow || key == KeyCode.D)
         {
             SwapPuzzle.selectedCell.GetComponent<SwapCell>().SwapRight();
         }
-        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
+
+        if (key == KeyCode.UpArrow || key == KeyCode.W)
         {
             SwapPuzzle.selectedCell.GetComponent<SwapCell>().SwapForward();
         }
-        if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
+
+        if (key == KeyCode.DownArrow || key == KeyCode.S)
         {
             SwapPuzzle.selectedCell.GetComponent<SwapCell>().SwapBackward();
         }
     }
-    private void Update()
+    public bool IsKeyUp()
+    {   if (Input.GetKeyUp(keyCode))
+        {
+            keyCode = 0;
+            return true;
+        }
+        return false;
+    }
+    public void Swap()
     {
-        Swap();
         
+        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            SwapPuzzle.selectedCell.GetComponent<SwapCell>().SwapLeft();
+            keyCode = KeyCode.A;
+            nextTime += (interval - (nextTime - Time.time));
+        }
+        if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
+        {
+            SwapPuzzle.selectedCell.GetComponent<SwapCell>().SwapRight();
+            keyCode = KeyCode.D;
+            nextTime += (interval - (nextTime - Time.time));
+        }
+        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
+        {
+            SwapPuzzle.selectedCell.GetComponent<SwapCell>().SwapForward();
+            keyCode = KeyCode.W;
+            nextTime += (interval - (nextTime - Time.time));
+        }
+        if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
+        {
+            SwapPuzzle.selectedCell.GetComponent<SwapCell>().SwapBackward();
+            keyCode = KeyCode.S;
+            nextTime += (interval - (nextTime - Time.time));
+        }
+    }
+    
+
+    private void SwapDelay()
+    {
+        isKeyUp = IsKeyUp();
+        if (Time.time >= nextTime)
+        {
+            if (!isKeyUp)
+                AutoSwap(keyCode);
+            nextTime += interval;
+        }
+    }
+    private void ShowError()
+    {
         if (SwapPuzzle.invertedCellCount > SwapPuzzle.shiftedCellCount)
             countText.text = SwapPuzzle.invertedCellCount.ToString();
         else
             countText.text = SwapPuzzle.shiftedCellCount.ToString();
-            
+    }
 
+    private void SetWin()
+    {
         if (IsWin() && firstTime)
         {
             firstTime = false;
@@ -89,7 +169,15 @@ public class SwapPuzzleController : MonoBehaviour
             Camera.main.transform.position = new Vector3(0, 0, Camera.main.transform.position.z);
 
         }
-           
+    }
+    private void Update()
+    {
+        Swap();
+        SwapDelay();
+
+        ShowError();
+
+        SetWin();           
     }
 
     public bool IsWin()
@@ -103,11 +191,13 @@ public class SwapPuzzleController : MonoBehaviour
     {
         Camera.main.orthographicSize = orthographSize;
         Camera.main.transform.position = new Vector3(0f, 0f, Camera.main.transform.position.z);
-        slider.value = 0;
+        GameObject.FindGameObjectWithTag("Slider").GetComponent<Slider>().value = 0;
 
     }
+    /**
     public void ButtonClick()
     {
         AudioManager.instance.PlayOnce(buttonClickClip);
     }
+    **/
 } 
