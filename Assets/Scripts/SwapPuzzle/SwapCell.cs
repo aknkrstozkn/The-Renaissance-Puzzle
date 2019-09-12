@@ -121,8 +121,6 @@ public class SwapCell : MonoBehaviour
         swapCell.SetRight(tempRight);
 
         ChangingPositions(swapObject, swapCell);
-        
-        Debug.Log("loading is done");
     }
     public void SetPuzzlePieceGlow(bool outlinesEnabled)
     {
@@ -162,8 +160,6 @@ public class SwapCell : MonoBehaviour
         swapCell.SetRight(tempRight);
 
         ChangingPositions(swapObject, swapCell);
-        
-        Debug.Log("loading is done");
     }
 
     public void SwapRight()
@@ -195,8 +191,6 @@ public class SwapCell : MonoBehaviour
         swapCell.SetRight(this.gameObject);
 
         ChangingPositions(swapObject, swapCell);
-        
-        Debug.Log("loading is done");
     }
     
     public void SwapForward()
@@ -227,9 +221,7 @@ public class SwapCell : MonoBehaviour
         swapCell.SetLeft(tempLeft);
         swapCell.SetRight(tempRight);
 
-        ChangingPositions(swapObject, swapCell);
-        
-        Debug.Log("loading is done");
+        ChangingPositions(swapObject, swapCell); 
     }
     public void SetRightAdjacentsValue(GameObject cell)
     {

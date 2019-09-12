@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SwapPuzzle.unity
     guid: 9d3d788fd3bbb8b498140fccc528253f
+  - enabled: 1
+    path: Assets/Scenes/SlidePuzzle.unity
+    guid: eead43f2cae8d2c40b1912ad2eed7fe1
   m_configObjects: {}

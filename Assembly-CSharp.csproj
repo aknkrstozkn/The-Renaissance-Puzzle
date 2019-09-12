@@ -76,6 +76,13 @@
     <Compile Include="Assets\Scripts\RotatePuzzle\SliderController.cs" />
     <Compile Include="Assets\Scripts\RotatePuzzle\TouchRotate.cs" />
     <Compile Include="Assets\Scripts\SaveSystem.cs" />
+    <Compile Include="Assets\Scripts\SlidePuzzle\SlideCameraController.cs" />
+    <Compile Include="Assets\Scripts\SlidePuzzle\SlideCell.cs" />
+    <Compile Include="Assets\Scripts\SlidePuzzle\SlidePuzzle.cs" />
+    <Compile Include="Assets\Scripts\SlidePuzzle\SlidePuzzleController.cs" />
+    <Compile Include="Assets\Scripts\SlidePuzzle\SlidePuzzleData.cs" />
+    <Compile Include="Assets\Scripts\SlidePuzzle\SlideSliderController.cs" />
+    <Compile Include="Assets\Scripts\SlidePuzzle\TouchSlideCell.cs" />
     <Compile Include="Assets\Scripts\SwapPuzzle\SwapCameraController.cs" />
     <Compile Include="Assets\Scripts\SwapPuzzle\SwapCell.cs" />
     <Compile Include="Assets\Scripts\SwapPuzzle\SwapPuzzle.cs" />

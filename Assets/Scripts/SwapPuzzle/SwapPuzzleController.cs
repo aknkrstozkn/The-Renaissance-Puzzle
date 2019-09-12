@@ -39,7 +39,8 @@ public class SwapPuzzleController : MonoBehaviour
     float interval = 0.3f;
     float nextTime = 0;
     private bool isKeyUp;
-    private KeyCode keyCode;
+    private KeyCode keyCode1;
+    private KeyCode keyCode2;
     void Awake()
     {
         firstTime = true;      
@@ -76,7 +77,7 @@ public class SwapPuzzleController : MonoBehaviour
         paintingIndex = MainMenuManager.paintIndex;        
 
         isRotateEnabled = MainMenuManager.isRotateOn;
-        complexity = 1.0f / 0.3f;
+        complexity = MainMenuManager.complexityFactor;
         swapPuzzle = new SwapPuzzle(complexity, isRotateEnabled, paintingIndex, pieceCount, cellsParent, glowShader);
         swapPuzzle.BuildSwapPuzzle();
     }
@@ -128,9 +129,10 @@ public class SwapPuzzleController : MonoBehaviour
         }
     }
     public bool IsKeyUp()
-    {   if (Input.GetKeyUp(keyCode))
+    {   if (Input.GetKeyUp(keyCode1) || Input.GetKeyUp(keyCode2))
         {
-            keyCode = 0;
+            keyCode1 = 0;
+            keyCode2 = 0;
             return true;
         }
         return false;
@@ -141,25 +143,29 @@ public class SwapPuzzleController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
         {
             SwapPuzzle.selectedCell.GetComponent<SwapCell>().SwapLeft();
-            keyCode = KeyCode.A;
+            keyCode1 = KeyCode.A;
+            keyCode2 = KeyCode.LeftArrow;
             nextTime += (interval - (nextTime - Time.time));
         }
         if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
         {
             SwapPuzzle.selectedCell.GetComponent<SwapCell>().SwapRight();
-            keyCode = KeyCode.D;
+            keyCode1 = KeyCode.D;
+            keyCode2 = KeyCode.RightArrow;
             nextTime += (interval - (nextTime - Time.time));
         }
         if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
         {
             SwapPuzzle.selectedCell.GetComponent<SwapCell>().SwapForward();
-            keyCode = KeyCode.W;
+            keyCode1 = KeyCode.W;
+            keyCode2 = KeyCode.UpArrow;
             nextTime += (interval - (nextTime - Time.time));
         }
         if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
         {
             SwapPuzzle.selectedCell.GetComponent<SwapCell>().SwapBackward();
-            keyCode = KeyCode.S;
+            keyCode1 = KeyCode.S;
+            keyCode2 = KeyCode.DownArrow;
             nextTime += (interval - (nextTime - Time.time));
         }
     }
@@ -171,7 +177,7 @@ public class SwapPuzzleController : MonoBehaviour
         if (Time.time >= nextTime)
         {
             if (!isKeyUp)
-                AutoSwap(keyCode);
+                AutoSwap(keyCode1);
             nextTime += interval;
         }
     }

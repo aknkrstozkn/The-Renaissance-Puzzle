@@ -55,7 +55,7 @@ public class RotatePuzzleController : MonoBehaviour
     {
         pieceCount = MainMenuManager.pieceCount;
         paintingIndex = MainMenuManager.paintIndex;
-        complexityFactor = 1.0f / 0.3f;
+        complexityFactor = MainMenuManager.complexityFactor;
         rotatePuzzle = new RotatePuzzle(complexityFactor, paintingIndex, pieceCount, cellsParent, glowShader);
         rotatePuzzle.BuildRotatePuzzle();
     }

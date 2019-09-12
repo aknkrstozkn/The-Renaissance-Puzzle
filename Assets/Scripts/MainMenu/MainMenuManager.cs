@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,6 +11,10 @@ public class MainMenuManager : MonoBehaviour
     // Start is called before the first frame update
     public Toggle swapToggle;
     public Toggle rotateToggle;
+    public Toggle slideToggle;
+
+    public Slider slider;
+    public static float complexityFactor;
 
     public Sprite[] sprites;
 
@@ -41,6 +46,8 @@ public class MainMenuManager : MonoBehaviour
 
     public void LoadSaveOfSwap()
     {
+        if (!File.Exists(SaveSystem.swapPuzzleSavePath))
+            return;
         isLoadingSave = true;
         loadingText.gameObject.SetActive(true);
         SceneManager.LoadScene(2);
@@ -48,20 +55,33 @@ public class MainMenuManager : MonoBehaviour
 
     public void LoadSaveOfRotate()
     {
+        if (!File.Exists(SaveSystem.rotatePuzzleSavePath))
+            return;
         isLoadingSave = true;
         loadingText.gameObject.SetActive(true);
         SceneManager.LoadScene(1);
     }
 
+    public void LoadSaveOfSlide()
+    {
+        if (!File.Exists(SaveSystem.slidePuzzleSavePath))
+            return;
+        isLoadingSave = true;
+        loadingText.gameObject.SetActive(true);
+        SceneManager.LoadScene(3);
+    }
+
     public void LoadScene()
 
     {
-        if (swapToggle.isOn == false && rotateToggle.isOn == false)
+        if ((swapToggle.isOn == false && rotateToggle.isOn == false && slideToggle.isOn == false) 
+            || (swapToggle.isOn == true && rotateToggle.isOn == true && slideToggle.isOn == true))
         {
             isReady = false;
             return;
         }
         painting = sprites[paintIndex];
+        complexityFactor = 10f / (float)slider.value; 
 
         if (swapToggle.isOn == true && rotateToggle.isOn == false)
         {
@@ -74,6 +94,18 @@ public class MainMenuManager : MonoBehaviour
             loadingText.gameObject.SetActive(true);
             isRotateOn = true;
             SceneManager.LoadScene(2);
+        }
+        else if (slideToggle.isOn == true && rotateToggle.isOn == false)
+        {
+            isRotateOn = false;
+            loadingText.gameObject.SetActive(true);
+            SceneManager.LoadScene(3);
+        }
+        else if (slideToggle.isOn == true && rotateToggle.isOn == true)
+        {
+            isRotateOn = true;
+            loadingText.gameObject.SetActive(true);
+            SceneManager.LoadScene(3);
         }
         else
         {

@@ -8,10 +8,6 @@ using System;
 
 public class SwapPuzzle
 {
-    //Paints------
-    [SerializeField]
-    private Sprite[] paintings;
-
     //Errors.....
     public static int invertedCellCount;
     public static int shiftedCellCount;
@@ -187,7 +183,10 @@ public class SwapPuzzle
         int tempPieceCount = pieceCount;
         int falseCount = (int)Math.Round(pieceCount / complexityFactor);
 
-        invertedCellCount = falseCount;
+        if (isRotateEnabled.Equals(true))
+            invertedCellCount = falseCount;
+        else
+            invertedCellCount = 0;
         shiftedCellCount = falseCount;
         
         ArrayList indexes = new ArrayList();
@@ -253,7 +252,7 @@ public class SwapPuzzle
             rotation);
         else
             cell.transform.SetPositionAndRotation(randomCellPosition,
-            rotation);
+            Quaternion.Euler(0,0,0));
 
 
         //Naming Cell and Setting his parent
@@ -313,7 +312,11 @@ public class SwapPuzzle
     {
         SetCellsParentSprite();
 
-        invertedCellCount = data.GetInvertedCount();
+        if (data.GetIsRotateEnable().Equals(true))
+            invertedCellCount = data.GetInvertedCount();
+        else
+            invertedCellCount = 0;
+
         shiftedCellCount = data.GetShiftedCount();
 
         BuildCells(true, data.GetRandomPozitions(), data.GetRotations());

@@ -7,7 +7,7 @@ public static class SaveSystem
 {
     public static readonly string swapPuzzleSavePath = Application.persistentDataPath + "/SwapPuzzle.save";
     public static readonly string rotatePuzzleSavePath = Application.persistentDataPath + "/RotatePuzzle.save";
-    public static readonly string shiftPuzzleSavePath = Application.persistentDataPath + "/ShiftPuzzle.save";
+    public static readonly string slidePuzzleSavePath = Application.persistentDataPath + "/SlidePuzzle.save";
 
     public static void SaveRotatePuzzle(RotatePuzzle rotatePuzzle)
     {
@@ -49,6 +49,17 @@ public static class SaveSystem
         stream.Close();
     }
 
+    public static void SaveSlidePuzzle(SlidePuzzle slidePuzzle)
+    {
+        BinaryFormatter formatter = new BinaryFormatter();
+        FileStream stream = new FileStream(slidePuzzleSavePath, FileMode.Create);
+
+        SlidePuzzleData data = new SlidePuzzleData(slidePuzzle);
+
+        formatter.Serialize(stream, data);
+        stream.Close();
+    }
+
     public static SwapPuzzleData LoadSwapPuzzle()
     {
         if (File.Exists(swapPuzzleSavePath))
@@ -63,6 +74,24 @@ public static class SaveSystem
         else
         {
             Debug.LogError("Save file not found in" + swapPuzzleSavePath);
+            return null;
+        }
+    }
+
+    public static SlidePuzzleData LoadSlidePuzzle()
+    {
+        if (File.Exists(slidePuzzleSavePath))
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            FileStream stream = new FileStream(slidePuzzleSavePath, FileMode.Open);
+
+            SlidePuzzleData data = formatter.Deserialize(stream) as SlidePuzzleData;
+            stream.Close();
+            return data;
+        }
+        else
+        {
+            Debug.LogError("Save file not found in" + slidePuzzleSavePath);
             return null;
         }
     }
