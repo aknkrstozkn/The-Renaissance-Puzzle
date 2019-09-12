@@ -17,10 +17,12 @@ public class SwapPuzzleController : MonoBehaviour
     private SwapPuzzle swapPuzzle;
     public static Shader glowShader;
     readonly float multiplier = 0.5f;
+    private float complexity;
     //Values Whoes come from Main Menu
     private bool isRotateEnabled;
     private int pieceCount;
     public Sprite painting;
+    public int paintingIndex;
     //---------------------------
 
     //Win Screen
@@ -40,24 +42,43 @@ public class SwapPuzzleController : MonoBehaviour
     private KeyCode keyCode;
     void Awake()
     {
-        firstTime = true;
-
-        /*
-        pieceCount = MainMenuManager.pieceCount;
-        painting = MainMenuManager.painting;
-        isRotateEnabled = MainMenuManager.isRotateOn;
-        */
-        pieceCount = 72;
-        isRotateEnabled = false;
-        float complexity = 1.0f / 0.5f;
-
-        orthographSize = ((painting.textureRect.height / 100) * multiplier);
+        firstTime = true;      
         
-        Camera.main.orthographicSize = orthographSize;
+        
         winText.gameObject.SetActive(false);
-        swapPuzzle = new SwapPuzzle(complexity, isRotateEnabled, painting, pieceCount, cellsParent, glowShader);
-        swapPuzzle.BuildSwapPuzzle();
 
+        if (MainMenuManager.isLoadingSave.Equals(false))
+            BuildPuzzle();
+        else
+            LoadPuzzle();
+
+        painting = MainMenuManager.paintings[paintingIndex];
+        orthographSize = ((painting.textureRect.height / 100) * multiplier);
+        Camera.main.orthographicSize = orthographSize;
+
+    }
+
+    private void LoadPuzzle()
+    {
+        SwapPuzzleData data = SaveSystem.LoadSwapPuzzle();
+        pieceCount = data.GetPieceCount();
+        paintingIndex = data.GetPaintIndex();
+        isRotateEnabled = data.GetIsRotateEnable();
+        complexity = data.GetComplexityFactor();
+        swapPuzzle = new SwapPuzzle(complexity, isRotateEnabled, paintingIndex, pieceCount, cellsParent, glowShader);
+        swapPuzzle.LoadSwapPuzzle(data);
+    }
+
+    private void BuildPuzzle()
+    {
+        pieceCount = MainMenuManager.pieceCount;
+        
+        paintingIndex = MainMenuManager.paintIndex;        
+
+        isRotateEnabled = MainMenuManager.isRotateOn;
+        complexity = 1.0f / 0.3f;
+        swapPuzzle = new SwapPuzzle(complexity, isRotateEnabled, paintingIndex, pieceCount, cellsParent, glowShader);
+        swapPuzzle.BuildSwapPuzzle();
     }
     public void ShowPaint(Button buttonShowPaint)
     {
@@ -74,8 +95,12 @@ public class SwapPuzzleController : MonoBehaviour
         }
 
     }
+
+    
     public void Exit()
     {
+        SaveSystem.SaveSwapPuzzle(swapPuzzle);
+
         MainMenuManager.isReady = false;
         SceneManager.LoadScene(0);
     }

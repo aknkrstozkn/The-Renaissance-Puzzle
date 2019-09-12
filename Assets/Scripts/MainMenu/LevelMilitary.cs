@@ -19,7 +19,7 @@ public class LevelMilitary : MonoBehaviour
     public void OnClick()
     {
         MainMenuManager.pieceCount = int.Parse(gameObject.name);
-        MainMenuManager.painting = MainMenuManager.paintings[1];
+        MainMenuManager.paintIndex = 1;
         MainMenuManager.isReady = true;
 
         Debug.Log(MainMenuManager.pieceCount);

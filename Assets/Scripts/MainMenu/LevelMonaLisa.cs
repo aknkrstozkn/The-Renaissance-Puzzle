@@ -19,7 +19,7 @@ public class LevelMonaLisa : MonoBehaviour
     public void OnClick()
     {
         MainMenuManager.pieceCount = int.Parse(gameObject.name);
-        MainMenuManager.painting = MainMenuManager.paintings[3];
+        MainMenuManager.paintIndex = 3;
         MainMenuManager.isReady = true;
         Debug.Log(MainMenuManager.pieceCount);
 

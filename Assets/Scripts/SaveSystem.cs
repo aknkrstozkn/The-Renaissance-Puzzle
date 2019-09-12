@@ -1,0 +1,69 @@
+﻿using UnityEngine;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+
+
+public static class SaveSystem
+{
+    public static readonly string swapPuzzleSavePath = Application.persistentDataPath + "/SwapPuzzle.save";
+    public static readonly string rotatePuzzleSavePath = Application.persistentDataPath + "/RotatePuzzle.save";
+    public static readonly string shiftPuzzleSavePath = Application.persistentDataPath + "/ShiftPuzzle.save";
+
+    public static void SaveRotatePuzzle(RotatePuzzle rotatePuzzle)
+    {
+        BinaryFormatter formatter = new BinaryFormatter();
+        FileStream stream = new FileStream(rotatePuzzleSavePath, FileMode.Create);
+
+        RotatePuzzleData data = new RotatePuzzleData(rotatePuzzle);
+
+        formatter.Serialize(stream, data);
+        stream.Close();
+    }
+
+    public static RotatePuzzleData LoadRotatePuzzle()
+    {
+        if(File.Exists(rotatePuzzleSavePath))
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            FileStream stream = new FileStream(rotatePuzzleSavePath, FileMode.Open);
+
+            RotatePuzzleData data = formatter.Deserialize(stream) as RotatePuzzleData;
+            stream.Close();
+            return data;
+        }
+        else
+        {
+            Debug.LogError("Save file not found in" + rotatePuzzleSavePath);
+            return null;
+        }
+    }
+
+    public static void SaveSwapPuzzle(SwapPuzzle swapPuzzle)
+    {
+        BinaryFormatter formatter = new BinaryFormatter();
+        FileStream stream = new FileStream(swapPuzzleSavePath, FileMode.Create);
+
+        SwapPuzzleData data = new SwapPuzzleData(swapPuzzle);
+
+        formatter.Serialize(stream, data);
+        stream.Close();
+    }
+
+    public static SwapPuzzleData LoadSwapPuzzle()
+    {
+        if (File.Exists(swapPuzzleSavePath))
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            FileStream stream = new FileStream(swapPuzzleSavePath, FileMode.Open);
+
+            SwapPuzzleData data = formatter.Deserialize(stream) as SwapPuzzleData;
+            stream.Close();
+            return data;
+        }
+        else
+        {
+            Debug.LogError("Save file not found in" + swapPuzzleSavePath);
+            return null;
+        }
+    }
+}

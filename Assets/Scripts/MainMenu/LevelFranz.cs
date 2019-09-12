@@ -19,7 +19,7 @@ public class LevelFranz : MonoBehaviour
     public void OnClick()
     {
         MainMenuManager.pieceCount = int.Parse(gameObject.name);
-        MainMenuManager.painting = MainMenuManager.paintings[2];
+        MainMenuManager.paintIndex = 2;
         MainMenuManager.isReady = true;
 
         Debug.Log(MainMenuManager.pieceCount);

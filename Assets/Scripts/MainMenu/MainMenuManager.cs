@@ -15,14 +15,19 @@ public class MainMenuManager : MonoBehaviour
 
     public TextMeshProUGUI loadingText;
 
+    public static int paintIndex;
+
     public static Sprite painting;
     public static Sprite[] paintings;
     public static int pieceCount;
     public static bool isRotateOn;
 
+    public static bool isLoadingSave;
+
     public static bool isReady = false;
     void Awake()
     {
+        isLoadingSave = false;
         loadingText.gameObject.SetActive(false);
 
         paintings = new Sprite[sprites.Length];
@@ -33,14 +38,30 @@ public class MainMenuManager : MonoBehaviour
             paintings.SetValue(sprites[i], i); 
         }
     }
+
+    public void LoadSaveOfSwap()
+    {
+        isLoadingSave = true;
+        loadingText.gameObject.SetActive(true);
+        SceneManager.LoadScene(2);
+    }
+
+    public void LoadSaveOfRotate()
+    {
+        isLoadingSave = true;
+        loadingText.gameObject.SetActive(true);
+        SceneManager.LoadScene(1);
+    }
+
     public void LoadScene()
+
     {
         if (swapToggle.isOn == false && rotateToggle.isOn == false)
         {
             isReady = false;
             return;
         }
-           
+        painting = sprites[paintIndex];
 
         if (swapToggle.isOn == true && rotateToggle.isOn == false)
         {

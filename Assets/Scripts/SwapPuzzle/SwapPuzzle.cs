@@ -8,6 +8,10 @@ using System;
 
 public class SwapPuzzle
 {
+    //Paints------
+    [SerializeField]
+    private Sprite[] paintings;
+
     //Errors.....
     public static int invertedCellCount;
     public static int shiftedCellCount;
@@ -29,28 +33,61 @@ public class SwapPuzzle
     private Texture2D[] pieces;
     //Values to build cells
     private Sprite painting;
+    private int paintingIndex;
     private GameObject cellsParent;
     private int pieceCount;
     //To generate random angels for Cells
-    private readonly int[] zDegrees = { 0, 90, 180, 270 };
+    private readonly int[] zDegrees = { 90, 180, 270 };
     //Shader for glowing effect
     private Shader glowShader;
+
+
+    public void SetComplexityFactor(float complexityFactor)
+    {
+        this.complexityFactor = complexityFactor;
+    }
+
+    public float GetComplexityFactor()
+    {
+        return complexityFactor;
+    }
+
+    public int GetPieceCount()
+    {
+        return pieceCount;
+    }
+
+    public void SetPieceCount(int pieceCount)
+    {
+        this.pieceCount = pieceCount;
+    }
+
+    public int GetPaintingIndex()
+    {
+        return paintingIndex;
+    }
+
+    public void SetPaintingIndex(int paintingIndex)
+    {
+        this.paintingIndex = paintingIndex;
+    }
 
     public GameObject[] GetCells()
     {
         return cells;
     }
-    public SwapPuzzle(float complexityFactor, bool isRotateEnabled, Sprite painting, int pieceCount, GameObject cellsParent, Shader glowShader)
+
+    public SwapPuzzle(float complexityFactor, bool isRotateEnabled, int paintingIndex, int pieceCount, GameObject cellsParent, Shader glowShader)
     {
         SwapPuzzle.isRotateEnabled = isRotateEnabled;
-        
-        this.painting = painting;
+
+        this.paintingIndex = paintingIndex;        
         this.pieceCount = pieceCount;
         this.cellsParent = cellsParent;
         this.glowShader = glowShader;
-
         this.complexityFactor = complexityFactor;
 
+        painting = MainMenuManager.paintings[paintingIndex];
         cells = new GameObject[pieceCount];        
         pixel = CalculatePixel();
         heightSteps = GetSteps((float)painting.texture.height / 100f);
@@ -63,11 +100,13 @@ public class SwapPuzzle
         truePositionsOfCells = new ArrayList();
         falsePositionsOfCells = new ArrayList();
     }
-    private void BuildCells()
+    
+    private void BuildCells(bool isLoading = false, float[,] positions = null, float[] rotations = null)
     {
-        
-        SetFalsePositionsOfCells();
-        ArrayList tempFalsePositionIndexes = new ArrayList(falsePositionsOfCells);
+        ArrayList tempFalsePositionIndexes = null;
+        if (isLoading.Equals(false))
+            tempFalsePositionIndexes = new ArrayList(falsePositionsOfCells);
+
         //Saving position of cells to check adjacents
         randomPositionsOfCells = new Dictionary<Vector2, GameObject>();
         //Cell glow width
@@ -78,6 +117,7 @@ public class SwapPuzzle
         Vector2 pivot = new Vector2(0.5f, 0.5f);
         Rect rec = new Rect(0, 0, pixel * 100, pixel * 100);
         Vector2 position;
+        Quaternion rotation;
         for (float i = 0; i < widthSteps; i++)
         {
             float xCordinate = (pixel * i) + (pixel / 2f);
@@ -86,24 +126,34 @@ public class SwapPuzzle
                 int index = (int)((i * heightSteps) + j);
                 float yCordinate = (pixel * j) + (pixel / 2f);
                 Vector2 truePosition = new Vector2(xCordinate, yCordinate);
-                if (tempFalsePositionIndexes.Contains(index))
+
+                if (isLoading.Equals(false))
                 {
-                    position = GenareteRandomPosition(index);
-                    Debug.Log("F: " + index);
-                }                    
+                    if (tempFalsePositionIndexes.Contains(index))
+                    {
+                        position = GenareteRandomPosition(index);
+                        rotation = Quaternion.Euler(0, 0, zDegrees[UnityEngine.Random.Range(0, 3)]);
+                        Debug.Log("F: " + index);
+                    }
+                    else
+                    {
+                        position = truePosition;
+                        rotation = Quaternion.Euler(0, 0, 0);
+                        Debug.Log("T: " + index);
+                    }
+                }
                 else
                 {
-                    position = truePosition;
-                    Debug.Log("T: " + index);
+                    position = new Vector2(positions[index, 0], positions[index, 1]);
+                    rotation = Quaternion.Euler(0, 0, rotations[index]);
                 }
-                BuilCell(position, index, i, j, pivot, rec, maxGlowWidth);
+                
+                BuilCell(position, rotation, index, i, j, pivot, rec, maxGlowWidth);
                 randomPositionsOfCells.Add(position, cells[index]); 
             }            
         }
-        selectedCell = randomPositionsOfCells[new Vector2((pixel / 2f),(pixel / 2f))];
-        selectedCell.GetComponent<SwapCell>().SetPuzzlePieceGlow(true);
+        
     }
-
     private Vector2 GenareteRandomPosition(int index)
     {
         Vector2 position;
@@ -121,11 +171,7 @@ public class SwapPuzzle
             position = IndexToPosition((int)falsePositionsOfCells[tempIndex]);
             falsePositionsOfCells.RemoveAt(tempIndex);
         }
-        
-       
-
         return position;
-
     }
     private Vector2 IndexToPosition(int index)
     {
@@ -140,7 +186,10 @@ public class SwapPuzzle
     {
         int tempPieceCount = pieceCount;
         int falseCount = (int)Math.Round(pieceCount / complexityFactor);
-        Debug.Log("falseCount : " + falseCount);
+
+        invertedCellCount = falseCount;
+        shiftedCellCount = falseCount;
+        
         ArrayList indexes = new ArrayList();
 
         for (int i = 0; i < pieceCount; i++)
@@ -150,7 +199,7 @@ public class SwapPuzzle
         {
             int tempIndex = UnityEngine.Random.Range(0, tempPieceCount);
             falsePositionsOfCells.Add((int)indexes[tempIndex]);
-            Debug.Log("FALSE: " + (int)indexes[tempIndex]);
+            
             indexes.RemoveAt(tempIndex);
             tempPieceCount--;
         }        
@@ -174,18 +223,21 @@ public class SwapPuzzle
                     falsePositionsOfCells.Add(position);
                     complexityFactor += tempComplexityFactor;
                 }        
-                                    
-
-                
             }
         }
         
     }
-    private void BuilCell(Vector2 randomCellPosition, int index, float i, float j, Vector2 pivot, Rect rec, int maxGlowWidth)
+    private void BuilCell(Vector2 randomCellPosition, Quaternion rotation, int index, float i, float j, Vector2 pivot, Rect rec, int maxGlowWidth)
     {
         //Cordinates for cell
         float xCordinate = (pixel * i) + (pixel / 2f);
         float yCordinate = (pixel * j) + (pixel / 2f);
+
+        Debug.Log("index: " + index.ToString());
+        Debug.Log("truePosition: " + new Vector2(xCordinate, yCordinate).ToString());
+        Debug.Log("randomPosition: " + randomCellPosition.ToString());
+        Debug.Log("rotation: " + rotation.ToString());
+
         //Creating cells
         GameObject cell = new GameObject();       
        
@@ -198,10 +250,10 @@ public class SwapPuzzle
         //Creating with z: +90 position, because default z position is -180 and we want it to be 0
         if (isRotateEnabled)
             cell.transform.SetPositionAndRotation(randomCellPosition,
-            Quaternion.Euler(0, 0, zDegrees[UnityEngine.Random.Range(0, 4)]));
+            rotation);
         else
             cell.transform.SetPositionAndRotation(randomCellPosition,
-            Quaternion.Euler(0, 0, 0));
+            rotation);
 
 
         //Naming Cell and Setting his parent
@@ -242,17 +294,35 @@ public class SwapPuzzle
         swapCell.SetLeft(null);
         swapCell.SetRight(null);
         //-----------------------
-        CountFalseCells(cell);
         //Finally, adding our cell to the list.
         cells.SetValue(cell, index);
     }
     public void BuildSwapPuzzle()
     {
         SetCellsParentSprite();
-        BuildCells();
-        SetSwapCellsAdjacents();
-    }
 
+        SetFalsePositionsOfCells();
+        BuildCells();
+
+        SetSwapCellsAdjacents();
+
+        selectedCell = randomPositionsOfCells[new Vector2((pixel / 2f), (pixel / 2f))];
+        selectedCell.GetComponent<SwapCell>().SetPuzzlePieceGlow(true);
+    }
+    public void LoadSwapPuzzle(SwapPuzzleData data)
+    {
+        SetCellsParentSprite();
+
+        invertedCellCount = data.GetInvertedCount();
+        shiftedCellCount = data.GetShiftedCount();
+
+        BuildCells(true, data.GetRandomPozitions(), data.GetRotations());
+
+        SetSwapCellsAdjacents();
+
+        selectedCell = cells[data.GetIndexOfSelectedPuzzle()];
+        selectedCell.GetComponent<SwapCell>().SetPuzzlePieceGlow(true);
+    }
     private void SetSwapCellsAdjacents()
     {
         foreach (GameObject cell in cells)
@@ -278,13 +348,8 @@ public class SwapPuzzle
         }
     }
 
-    private void CountFalseCells(GameObject cell)
-    {
-        if (cell.transform.eulerAngles.z < 90)
-            invertedCellCount--;
-        if (cell.GetComponent<SwapCell>().GetIsPositionTrue().Equals(true))
-            shiftedCellCount--;
-    }
+    
+
     private float CalculatePixel()
     {
         float area = ((float)painting.texture.height) * ((float)painting.texture.width);

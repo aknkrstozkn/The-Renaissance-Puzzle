@@ -13,6 +13,7 @@ public class RotatePuzzleController : MonoBehaviour
     private RotatePuzzle rotatePuzzle;
     readonly float multiplier = 0.5f;
     public Sprite painting;
+    public int paintingIndex;
     bool firstTime;
     public TextMeshProUGUI winText;
     public TextMeshProUGUI countText;
@@ -20,20 +21,43 @@ public class RotatePuzzleController : MonoBehaviour
     public static Shader glowShader;
     float orthographSize;
 
-    
+    private float complexityFactor;
+
     void Awake()
     {
         firstTime = true;
 
-        pieceCount = MainMenuManager.pieceCount;
-        painting = MainMenuManager.painting;  
 
+        if (MainMenuManager.isLoadingSave.Equals(false))
+            BuildPuzzle();
+        else
+            LoadPuzzle();
+
+
+        painting = MainMenuManager.paintings[paintingIndex];
         orthographSize = ((painting.textureRect.height / 100) * multiplier);
         Camera.main.orthographicSize = orthographSize;
         winText.gameObject.SetActive(false);
-        rotatePuzzle = new RotatePuzzle(painting, pieceCount, cellsParent, glowMaterial, glowShader);
-        rotatePuzzle.BuildRotatePuzzle();
+    }
 
+    void LoadPuzzle()
+    {
+        RotatePuzzleData data = SaveSystem.LoadRotatePuzzle();
+        pieceCount = data.GetPieceCount();
+        paintingIndex = data.GetPaintIndex();
+        complexityFactor = data.GetComplexityFactor();
+        rotatePuzzle = new RotatePuzzle(complexityFactor, paintingIndex, pieceCount, cellsParent, glowShader);
+        rotatePuzzle.LoadRotatePuzzle(data);
+        
+    }
+
+    private void BuildPuzzle()
+    {
+        pieceCount = MainMenuManager.pieceCount;
+        paintingIndex = MainMenuManager.paintIndex;
+        complexityFactor = 1.0f / 0.3f;
+        rotatePuzzle = new RotatePuzzle(complexityFactor, paintingIndex, pieceCount, cellsParent, glowShader);
+        rotatePuzzle.BuildRotatePuzzle();
     }
 
     private void Update()
@@ -74,6 +98,8 @@ public class RotatePuzzleController : MonoBehaviour
     }
     public void Exit()
     {
+        SaveSystem.SaveRotatePuzzle(rotatePuzzle);
+
         MainMenuManager.isReady = false;
         SceneManager.LoadScene(0);
     }

@@ -21,11 +21,9 @@ public class LevelAncient : MonoBehaviour
     public void OnClick()
     {
         MainMenuManager.pieceCount = int.Parse(gameObject.name);
-        MainMenuManager.painting = MainMenuManager.paintings[0];
+        MainMenuManager.paintIndex = 0;
 
         MainMenuManager.isReady = true;
-
-        Debug.Log(MainMenuManager.pieceCount);
 
     }
     
