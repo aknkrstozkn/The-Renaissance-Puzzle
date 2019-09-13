@@ -26,6 +26,7 @@ public class SlidePuzzle
     private Texture2D[] pieces;
     //Values to build cells
     private Sprite painting;
+    private Sprite selectedCellsSprite;
     private int paintingIndex;
     private GameObject cellsParent;
     private int pieceCount;
@@ -70,7 +71,7 @@ public class SlidePuzzle
         return cells;
     }
 
-    public SlidePuzzle(float complexityFactor, bool isRotateEnabled, int paintingIndex, int pieceCount, GameObject cellsParent, Shader glowShader)
+    public SlidePuzzle(float complexityFactor, bool isRotateEnabled, int paintingIndex, Sprite selectedCellsSprite, int pieceCount, GameObject cellsParent, Shader glowShader)
     {
         SlidePuzzle.isRotateEnabled = isRotateEnabled;
 
@@ -79,6 +80,7 @@ public class SlidePuzzle
         this.cellsParent = cellsParent;
         this.glowShader = glowShader;
         this.complexityFactor = complexityFactor;
+        this.selectedCellsSprite = selectedCellsSprite;
 
         painting = MainMenuManager.paintings[paintingIndex];
         cells = new GameObject[pieceCount];
@@ -145,8 +147,14 @@ public class SlidePuzzle
                 
             }
         }
-        //cells[pieceCount - 1].GetComponent<SpriteRenderer>().sprite = null;
-        cells[pieceCount - 1].GetComponent<SpriteRenderer>().color = Color.blue;
+        Texture2D spriteTexture = new Texture2D((int)(pixel * 100f), (int)(pixel * 100f));
+        var pixels = selectedCellsSprite.texture.GetPixels(0, 0, (int)(pixel * 100f), (int)(pixel * 100f));
+        spriteTexture.SetPixels(pixels);
+        spriteTexture.Apply();
+
+
+        cells[pieceCount - 1].GetComponent<SpriteRenderer>().sprite = Sprite.Create(spriteTexture, rec, pivot);
+        //cells[pieceCount - 1].GetComponent<RectTransform>().sizeDelta = new Vector2(pixel, pixel); ;
 
 
     }

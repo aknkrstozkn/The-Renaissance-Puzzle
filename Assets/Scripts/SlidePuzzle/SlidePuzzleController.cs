@@ -22,6 +22,7 @@ public class SlidePuzzleController : MonoBehaviour
     private bool isRotateEnabled;
     private int pieceCount;
     public Sprite painting;
+    public Sprite selectedCellsSprite;
     public int paintingIndex;
     //---------------------------
 
@@ -53,9 +54,13 @@ public class SlidePuzzleController : MonoBehaviour
         else
             LoadPuzzle();
 
+        
+
         painting = MainMenuManager.paintings[paintingIndex];
         orthographSize = ((painting.textureRect.height / 100) * multiplier);
         Camera.main.orthographicSize = orthographSize;
+
+        
 
     }
 
@@ -66,7 +71,7 @@ public class SlidePuzzleController : MonoBehaviour
         paintingIndex = data.GetPaintIndex();
         isRotateEnabled = data.GetIsRotateEnable();
         complexity = data.GetComplexityFactor();
-        slidePuzzle = new SlidePuzzle(complexity, isRotateEnabled, paintingIndex, pieceCount, cellsParent, glowShader);
+        slidePuzzle = new SlidePuzzle(complexity, isRotateEnabled, paintingIndex, selectedCellsSprite, pieceCount, cellsParent, glowShader);
         slidePuzzle.LoadSlidePuzzle(data);
     }
 
@@ -78,7 +83,7 @@ public class SlidePuzzleController : MonoBehaviour
 
         isRotateEnabled = MainMenuManager.isRotateOn;
         complexity = MainMenuManager.complexityFactor;
-        slidePuzzle = new SlidePuzzle(complexity, isRotateEnabled, paintingIndex, pieceCount, cellsParent, glowShader);
+        slidePuzzle = new SlidePuzzle(complexity, isRotateEnabled, paintingIndex, selectedCellsSprite, pieceCount, cellsParent, glowShader);
         slidePuzzle.BuildSlidePuzzle();
     }
     public void ShowPaint(Button buttonShowPaint)
